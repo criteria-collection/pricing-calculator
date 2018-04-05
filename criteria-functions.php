@@ -5,9 +5,15 @@ namespace Criteria\Pricing;
 class Shipping
 {
 
-    /**
-     * Create a new Shipping Instance
+    /*
+
+      Create a new Shipping Instance
+
+       https://stackoverflow.com/questions/15720684/pass-associative-array-to-function-in-php
+
      */
+
+
     public function __construct(
 
       $ShippingPackagingAdjustmentPct,
