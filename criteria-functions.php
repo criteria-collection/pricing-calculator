@@ -1,24 +1,303 @@
 <?php
 
-namespace Criteria\Pricing;
+function ShippingInternational($ItemInputs, $PortInputs) {
 
-class Shipping
-{
+    echo "ShippingLCLTotal: ";
+    echo ShippingLCLTotal($ItemInputs, $PortInputs[lcl]);
+    echo "\n";
 
-    /*
+    echo "ShippingAFTotal: ";
+    echo ShippingAFTotal($ItemInputs, $PortInputs[af]);
+    echo "\n";
 
-      Create a new Shipping Instance
+}
 
+function ShippingLCLTotal($ItemInputs, $PortLCLInputs) {
+
+  foreach ( $PortLCLInputs as $key=>$value ) {
+    echo $key . ' => ' . $value . "\n";
+  }
+
+  $ShippingLCL_Collection = max(
+    $PortLCLInputs[ShippingLCL_Collection_Min],
+    $PortLCLInputs[ShippingLCL_Collection_MT]
+    * $ItemInputs[ShippedItemWeightMT]
+  );
+
+  $ShippingLCL_DeliverySurcharge =
+    1+($PortLCLInputs[ShippingLCL_DeliverySurchargePct]/100);
+
+  $ShippingLCL_Delivery = max(
+    $PortLCLInputs[ShippingLCL_Delivery_Min],
+    $PortLCLInputs[ShippingLCL_Delivery_WV]
+    * $ItemInputs[ShippedItemWV]
+  ) * $ShippingLCL_DeliverySurcharge
+  + $ItemInputs[TailgateTruckRequired]
+    ? $PortLCLInputs[ShippingLCL_DeliveryTailgateTruck]
+    : 0;
+
+  return
+    $PortLCLInputs[ShippingLCLPerItem] +
+    $ShippingLCL_Collection +
+    $ShippingLCL_Delivery +
+    $ItemInputs[ShippingLCLPerWV]
+    * $ItemInputs[ShippedItemWV];
+
+}
+
+function ShippingAFTotal($ItemInputs, $PortAFInputs) {
+
+  foreach ( $PortAFInputs as $key=>$value ) {
+      echo $key . ' => ' . $value . "\n";
+  }
+/*
+  ShippingAF_Collection_Min
+    * AF Collection Minimum (eg. C21)
+
+  ShippingAF_Collection_CW
+    * AF Collection by CW (eg. C22)
+
+  ShippingAF_Collection = MAX(
+    ShippingAF_Collection_Min,
+    ShippingAF_Collection_MT * ShippedItemCW
+  )
+
+  ShippingAFPerItem
+    * AF Shipping
+      * Airway Bill Fees
+      * Security Fee (where fixed)
+    * Australian Destination Charges - AF
+      * IDF
+      * CMR Compliance
+    * Australian Customs Charges
+      * Agency and attendance charges
+      * Quarantine Compliance
+      * ICS Processing Fee
+
+  ShippingAF_THC_Min
+    * AirFreight THC Minimum
+
+  ShippingAF_THC_CW
+    * AirFreight THC per CW
+
+  ShippingAF_THC = MAX(
+    ShippingAF_THC_Min,
+    ShippingAF_THC_CW * ShippedItemCW
+  )
+
+  ShippingAF_WarRisk_Min
+    * AirFreight War Risk Minimum
+
+  ShippingAF_WarRisk_CW
+    * AirFreight War Risk per CW
+
+  ShippingAF_WarRisk = MAX(
+    ShippingAF_WarRisk_Min,
+    ShippingAF_WarRisk_CW * ShippedItemCW
+  )
+
+  ShippingAF_Security_CW
+    * AirFreight Security where per CW
+
+  ShippingAF_Security = ShippingAF_Security_CW * ShippedItemCW
+
+  ShippingAF_Freight_Min
+    * AirFreight Freight Minimum
+
+  ShippingAF_Freight_CW
+    * AirFreight Freight per CW
+
+  ShippingAF_Freight = MAX(
+    ShippingAF_Freight_Min,
+    ShippingAF_Freight_CW * ShippedItemCW
+  )
+
+  ShippingAF_Fuel_Min
+    * AirFreight Fuel Surcharge Minimum
+
+  ShippingAF_Fuel_CW
+    * AirFreight Fuel Surcharge per CW
+
+  ShippingAF_Fuel = MAX(
+    ShippingAF_Fuel_Min,
+    ShippingAF_Fuel_CW * ShippedItemCW
+  )
+
+  ShippingAF_ITF_Min
+    * Australian Destination Charges - ITF Min
+
+  ShippingAF_ITF_MT
+    * Australian Destination Charges - ITF per MT
+
+  ShippingAF_ITF = MAX(
+    ShippingAF_ITF_Min,
+    ShippingAF_ITF_MT * ShippedItemWeightMT
+  )
+
+  ShippingAF_Handling_Min
+    * Australian Destination Charges - Airline Handling Minimum
+
+  ShippingAF_Handling_MT
+    * Australian Destination Charges - Airline Handling Per MT
+
+  ShippingAF_Handling = MAX(
+    ShippingAF_Handling_Min,
+    ShippingAF_Handling_MT * ShippedItemWeightMT
+  )
+
+  ShippingAF_Delivery_Min
+    * LCL Collection Minimum (eg. C21)
+
+  ShippingAF_Delivery_WV
+    * LCL Collection by Weight or Volume (eg. C22)
+
+  ShippingAF_DeliverySurchargePct
+     Australian Delivery Charges - Fuel Surcharge Pct (eg 14%)
+
+  ShippingAF_DeliverySurcharge = 1+(ShippingAF_DeliverySurchargePct/100)
+
+  ShippingAF_DeliveryTailgateTruck
+    * Australian Delivery Charges - If item requires tailgate truck
+
+  ShippingAF_Delivery = MAX(
+    ShippingAF_Delivery_Min,
+    ShippingAF_Delivery_WV * ShippedItemWV
+  ) * ShippingAF_DeliverySurcharge
+  + IF (item requires a tailgate truck) THEN
+    ShippingAF_DeliveryTailgateTruck
+  ELSE
+    0
+  END IF
+
+*/
+  return
+    ShippingAFPerItem +
+    ShippingAF_Collection +
+    ShippingAF_THC +
+    ShippingAF_WarRisk +
+    ShippingAF_Security +
+    ShippingAF_Freight +
+    ShippingAF_Fuel +
+    ShippingAF_ITF +
+    ShippingAF_Handling +
+    ShippingAF_Delivery;
+}
+
+function ShippingDomestic($ItemInputs, $PortDFInputs) {
+  foreach ( $ItemInputs as $key=>$value ) {
+      echo $key . ' => ' . $value . "\n";
+  }
+
+  foreach ( $PortDFInputs as $key=>$value ) {
+      echo $key . ' => ' . $value . "\n";
+  }
+}
+
+function Shipping($Domestic, $ItemInputs, $PortInputs) {
+
+  $ItemInputs[ShippingPackagingAdjustment] =
+    1+($ItemInputs[ShippingPackagingAdjustmentPct]/100);
+
+  $ItemInputs[ItemVolumeM3] =
+    $ItemInputs[ItemLengthMtr] * $ItemInputs[ItemWidthMtr] * $ItemInputs[ItemHeightMtr];
+
+  $ItemInputs[ShippedItemWeightMT] =
+    ($ItemInputs[ItemWeightKG] * $ItemInputs[MinimumOrder] / 1000)
+    * $ItemInputs[ShippingPackagingAdjustment];
+
+  $ItemInputs[ShippedItemVolumeM3] =
+    $ItemInputs[ItemVolumeM3]
+    * $ItemInputs[MinimumOrder]
+    * $ItemInputs[ShippingPackagingAdjustment];
+
+  $ItemInputs[ShippedItemWV] =
+    max($ItemInputs[ShippedItemWeightMT], $ItemInputs[ShippedItemVolumeM3]);
+
+  $ItemInputs[ShippedItemVolumetricWeight]
+    = $ItemInputs[ShippedItemVolumeM3] * 167 / 1000;
+
+  $ItemInputs[ShippedItemCW]
+    = MAX($ItemInputs[ShippedItemVolumetricWeight], $ItemInputs[ShippedItemWeightMT]);
+
+  foreach ( $ItemInputs as $key=>$value ) {
+      echo $key . ' => ' . $value . "\n";
+  }
+
+  if ($Domestic) {
+    echo ShippingDomestic($ItemInputs, $PortInputs[domestic]);
+    echo "\n";
+  }
+  else {
+    echo ShippingInternational($ItemInputs, $PortInputs[international]);
+    echo "\n";
+  }
+
+}
+
+Shipping(
+    0, # 1 for domestic, 0 for international
+    [
+      ShippingPackagingAdjustmentPct => 1,
+      ItemWeightKG                   => 2,
+      ItemLengthMtr                  => 3,
+      ItemWidthMtr                   => 4,
+      ItemHeightMtr                  => 5,
+      MinimumOrder                   => 6,
+      TailgateTruckRequired          => 1, # 1 for yes, 0 for no
+    ],
+    [
+      domestic => [
+        ShippingDomesticCollectionMin        => 1,
+        ShippingDomesticCollectionPerM3      => 2,
+        ShippingDomesticDelivery             => 3,
+        ShippingDomesticDeliverySurchargePct => 4,
+      ],
+      international => [
+        lcl => [
+          ShippingLCL_Collection_Min        => 1,
+          ShippingLCL_Collection_MT         => 2,
+          ShippingLCLPerItem                => 3,
+          ShippingLCL_Delivery_Min          => 4,
+          ShippingLCL_Delivery_WV           => 5,
+          ShippingLCL_DeliverySurchargePct  => 6,
+          ShippingLCL_DeliveryTailgateTruck => 7,
+          ShippingLCLPerWV                  => 8,
+        ],
+        af => [
+          ShippingAF_Collection_Min        =>  1,
+          ShippingAF_Collection_CW         =>  2,
+          ShippingAFPerItem                =>  3,
+          ShippingAF_THC_Min               =>  4,
+          ShippingAF_THC_CW                =>  5,
+          ShippingAF_WarRisk_Min           =>  6,
+          ShippingAF_WarRisk_CW            =>  7,
+          ShippingAF_Security_CW           =>  8,
+          ShippingAF_Freight_Min           =>  9,
+          ShippingAF_Freight_CW            => 10,
+          ShippingAF_Fuel_Min              => 11,
+          ShippingAF_Fuel_CW               => 12,
+          ShippingAF_ITF_Min               => 13,
+          ShippingAF_ITF_MT                => 14,
+          ShippingAF_Handling_Min          => 15,
+          ShippingAF_Handling_MT           => 16,
+          ShippingAF_Delivery_Min          => 17,
+          ShippingAF_Delivery_WV           => 18,
+          ShippingAF_DeliverySurchargePct  => 19,
+          ShippingAF_DeliveryTailgateTruck => 20,
+        ]
+     ]
+  ]
+);
+
+__halt_compiler();
+
+?>
+
+
+/*
        https://stackoverflow.com/questions/15720684/pass-associative-array-to-function-in-php
 
-     */
-
-
-    public function __construct(
-
-      $ShippingPackagingAdjustmentPct,
-
-      /* LCL values for port */
+      -- LCL values for port
 
       $ShippingLCL_Collection_Min,
       $ShippingLCL_Collection_MT,
@@ -29,7 +308,7 @@ class Shipping
       $ShippingLCL_DeliveryTailgateTruck,
       $ShippingLCLPerWV,
 
-      /* AF values for port */
+      -- AF values for port
       $ShippingAF_Collection_Min
       $ShippingAF_Collection_CW
       $ShippingAFPerItem
@@ -51,34 +330,7 @@ class Shipping
       $ShippingAF_DeliverySurchargePct
       $ShippingAF_DeliveryTailgateTruck
 
-
-
-
-    )
-    {
-      /** Shipping Packing adjustment in percent */
-      private static $ShippingPackagingAdjustmentPct,
-
-      /** Shipping Packing adjustment in percent */
-      private static $ShippingPackagingAdjustmentPct,
-
-    }
-
-    /**
-     * Compute Shipping Total
-     *
-     * @param string $phrase Phrase to return
-     *
-     * @return string Returns the phrase passed in
-     */
-    public function ShippingTotal(
-      $international,
-      $phrase
-    )
-    {
-        return $ShippingTotal;
-    }
-}
+*/
 
 /*
 
