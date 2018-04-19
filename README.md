@@ -107,7 +107,9 @@ ShippingLCL_Collection = MAX(
 
 ShippingLCLPerItem
   * LCL Shipping - Handling
-  * Australian Destination Charges - LCL
+  * Customs and Quarantine
+    * Container Fees (all others same for AF too)
+  * Australian Destination Charges - LCL
     * Delivery Order Fee (actually per B/L but we estimate)
     * CMR Compliance
     * Port License Fee (when B/L based)
@@ -340,8 +342,8 @@ CustomsQuarantinePerItem
   * Lodgement Fees
   * Assessment Fees
   * Customs Declaration (Note question to Amon)
-  * Container Fees
-  * Container Inspection (Base)
+  
+  Note that Container Fees don't apply to AF - see LCL
 
 CustomsQuarantineInspectionNoWood
   * Cost of inspection when the item contains no wood
