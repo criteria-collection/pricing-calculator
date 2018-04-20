@@ -17,8 +17,9 @@ foreach ( $json['data'] as $product ) {
         'ItemLengthMtr'                  => $variation['shipping_length'],
         'ItemWidthMtr'                   => $variation['shipping_depth'],
         'ItemHeightMtr'                  => $variation['shipping_height'],
-        'MinimumOrder'                   => 1,
-        'TailgateTruckRequired'          => 0, # 1 for yes, 0 for no
+        'ItemHasWood'                    => $variation['has_wood'] ? 1 : 0,
+        'MinimumOrder'                   => 1, # Not in data hardcoded for now
+        'TailgateTruckRequired'          => 0, # 1 for yes, 0 for no. Hardcoded for now
       ];
 
       echo $product['meta']['brand']['name']
@@ -30,9 +31,9 @@ foreach ( $json['data'] as $product ) {
   }
 };
 
-
 function get_port_details() {
   return
+  # DB Shecher ex Brooklyn
   [
     'domestic' => [
       'ShippingDomesticCollectionMin'        => 1,
@@ -41,37 +42,44 @@ function get_port_details() {
       'ShippingDomesticDeliverySurchargePct' => 4,
     ],
     'international' => [
+      'all' => [
+        'CustomsQuarantinePerItem'             => 106.20,
+        'CustomsQuarantineInspectionNoWood'    =>  40.00,
+        'CustomsQuarantineInspectionWoodMin'   => 130.00,
+        'CustomsQuarantineInspectionWoodPerM3' => 150.00,
+
+      ],
       'lcl' => [
-        'ShippingLCL_Collection_Min'        => 1,
-        'ShippingLCL_Collection_MT'         => 2,
-        'ShippingLCLPerItem'                => 3,
-        'ShippingLCL_Delivery_Min'          => 4,
-        'ShippingLCL_Delivery_WV'           => 5,
-        'ShippingLCL_DeliverySurchargePct'  => 6,
-        'ShippingLCL_DeliveryTailgateTruck' => 7,
-        'ShippingLCLPerWV'                  => 8,
+        'ShippingLCL_Collection_Min'        => 326.40,
+        'ShippingLCL_Collection_MT'         => 369.4545455,
+        'ShippingLCLPerItem'                => 648.00,
+        'ShippingLCL_Delivery_Min'          =>  85.00,
+        'ShippingLCL_Delivery_WV'           =>  25.00,
+        'ShippingLCL_DeliverySurchargePct'  =>  16.00,
+        'ShippingLCL_DeliveryTailgateTruck' => 130.00,
+        'ShippingLCLPerWV'                  => 367.30,
       ],
       'af' => [
-        'ShippingAF_Collection_Min'        =>  1,
-        'ShippingAF_Collection_CW'         =>  2,
-        'ShippingAFPerItem'                =>  3,
-        'ShippingAF_THC_Min'               =>  4,
-        'ShippingAF_THC_CW'                =>  5,
-        'ShippingAF_WarRisk_Min'           =>  6,
-        'ShippingAF_WarRisk_CW'            =>  7,
-        'ShippingAF_Security_CW'           =>  8,
-        'ShippingAF_Freight_Min'           =>  9,
-        'ShippingAF_Freight_CW'            => 10,
-        'ShippingAF_Fuel_Min'              => 11,
-        'ShippingAF_Fuel_CW'               => 12,
-        'ShippingAF_ITF_Min'               => 13,
-        'ShippingAF_ITF_MT'                => 14,
-        'ShippingAF_Handling_Min'          => 15,
-        'ShippingAF_Handling_MT'           => 16,
-        'ShippingAF_Delivery_Min'          => 17,
-        'ShippingAF_Delivery_WV'           => 18,
-        'ShippingAF_DeliverySurchargePct'  => 19,
-        'ShippingAF_DeliveryTailgateTruck' => 20,
+        'ShippingAFPerItem'                =>  455.56,
+        'ShippingAF_Collection_Min'        =>   89.60,
+        'ShippingAF_Collection_CW'         =>  486.40,
+        'ShippingAF_THC_Min'               =>  115.20,
+        'ShippingAF_THC_CW'                =>  192.00,
+        'ShippingAF_WarRisk_Min'           =>    0.00,
+        'ShippingAF_WarRisk_CW'            =>  204.80,
+        'ShippingAF_Security_CW'           =>    0.00,
+        'ShippingAF_Freight_Min'           =>  160.00,
+        'ShippingAF_Freight_CW'            => 4992.00,
+        'ShippingAF_Fuel_Min'              =>    0.00,
+        'ShippingAF_Fuel_CW'               => 1600.00,
+        'ShippingAF_ITF_Min'               =>  100.00,
+        'ShippingAF_ITF_MT'                =>  250.00,
+        'ShippingAF_Handling_Min'          =>   47.00,
+        'ShippingAF_Handling_MT'           =>  470.00,
+        'ShippingAF_Delivery_Min'          =>   50.00,
+        'ShippingAF_Delivery_WV'           =>  320.00,
+        'ShippingAF_DeliveryTailgateTruck' =>  130.00,
+        'ShippingAF_DeliverySurchargePct'  =>   17.00,
       ]
     ]
   ];
