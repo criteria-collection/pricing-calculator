@@ -12,10 +12,28 @@ function warn ($message) {
 }
 
 function ShippingInternational($ItemInputs, $PortInputs) {
-  return min(
+  $BestPrice = min(
     ShippingLCLTotal($ItemInputs, $PortInputs['lcl']),
     ShippingAFTotal($ItemInputs, $PortInputs['af'])
   );
+
+  $CustomsQuarantineInspection;
+  if ($ItemInputs['ItemHasWood']) {
+
+    $CustomsQuarantineInspection = max(
+      $PortInputs['all']['CustomsQuarantineInspectionWoodMin'],
+      $PortInputs['all']['CustomsQuarantineInspectionWoodPerM3']
+      * $ItemInputs['ShippedItemVolumeM3']
+    );
+  }
+  else {
+    $CustomsQuarantineInspection =
+      $PortInputs['all']['CustomsQuarantineInspectionNoWood'];
+  }
+
+return $BestPrice
+       + $PortInputs['all']['CustomsQuarantinePerItem']
+       + $CustomsQuarantineInspection;
 }
 
 function ShippingLCLTotal($ItemInputs, $PortLCLInputs) {
