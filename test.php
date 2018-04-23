@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 
+$_CC_DEBUG=0;
 error_reporting(-1);
 
 include 'criteria-functions.php';
