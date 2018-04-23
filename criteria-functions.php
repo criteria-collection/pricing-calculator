@@ -217,6 +217,25 @@ function weight_unit_map($unit){
 
 };
 
+function calc_log ($item, $calculation, $calc_result, $note) {
+
+  global $_CC_DEBUG;
+  if ( ! $_CC_DEBUG ) {
+    return;
+  }
+
+  if (! isset($calc_result)) {
+    $calc_result = $item[$calculation];
+  }
+
+  if (! isset($note)) {
+    $note = 'calculation';
+  }
+
+  fputcsv(STDERR, array($item['id'], $calculation, $calc_result, $note));
+
+}
+
 function warn ($message) {
     $message = $message . "\n";
     fwrite(STDERR, $message);
