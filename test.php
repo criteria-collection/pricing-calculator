@@ -4,7 +4,7 @@
 $_CC_DEBUG=0;
 error_reporting(-1);
 
-include 'criteria-functions.php';
+include 'lib/criteria-functions.php';
 
 $options = parse_args();
 $str = file_get_contents($options['file']);
