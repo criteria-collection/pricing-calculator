@@ -241,6 +241,7 @@ function calc_log ($item, $calculation, $calc_result, $note) {
 
   global $_CC_DEBUG;
   if ( ! $_CC_DEBUG ) {
+  if ( ! $_CC_DEBUG && ! getenv('_CC_DEBUG') ) {
     return;
   }
 
