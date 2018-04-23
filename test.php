@@ -3,11 +3,7 @@
 
 include 'criteria-functions.php';
 
-$options = getopt(NULL, array("file:"));
-
-if (! isset($options['file']) ) {
-  throw new Exception("You must specify the data file via --file=<filename>\n");
-}
+$options = parse_args();
 
 $str = file_get_contents($options['file']);
 
@@ -60,6 +56,16 @@ foreach ( $json['data'] as $collection ) {
     }
   }
 };
+
+function parse_args() {
+  $options = getopt(NULL, array("file:"));
+
+  if (! isset($options['file']) ) {
+    throw new Exception("You must specify the data file via --file=<filename>\n");
+  }
+
+  return $options;
+}
 
 function get_variation_option ($variation) {
 
