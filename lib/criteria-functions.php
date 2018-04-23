@@ -3,6 +3,11 @@
 error_reporting(-1);
 
 function ShippingInternational($ItemInputs, $PortInputs) {
+
+  foreach ( $PortInputs['all'] as $key=>$value ) {
+    calc_log($ItemInputs, $key, $value, 'input');
+  }
+
   $BestPrice = min(
     ShippingLCLTotal($ItemInputs, $PortInputs['lcl']),
     ShippingAFTotal($ItemInputs, $PortInputs['af'])
