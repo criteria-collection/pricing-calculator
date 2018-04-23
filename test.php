@@ -38,8 +38,8 @@ foreach ( $json['data'] as $collection ) {
         'ItemHeightMtr'                  => unit_conv($collection['meta']['measurement']['value'],
                                                       $variation['shipping_height']),
         'ItemHasWood'                    => $variation['has_wood'] ? 1 : 0,
-        'MinimumOrder'                   => 1, # Not in data hardcoded for now
-        'TailgateTruckRequired'          => 0, # 1 for yes, 0 for no. Hardcoded for now
+        'MinimumOrder'                   => 1, # Not in data. Hardcoded for now
+        'TailgateTruckRequired'          => 0, # 1 for yes, 0 for no. Not in data. Hardcoded for now
       ];
 
       $wholesale_price = currency_conv($collection['meta']['currency']['value'],
