@@ -1,3 +1,8 @@
+Testing
+=======
+
+`_CC_DEBUG=1 ./test.php --file=test-data/CC_collection_dump_9418.json 2>> calc-log.csv 1>> pricing-out.csv`
+
 Shipping computation
 ====================
 
@@ -342,7 +347,7 @@ CustomsQuarantinePerItem
   * Lodgement Fees
   * Assessment Fees
   * Customs Declaration (Note question to Amon)
-  
+
   Note that Container Fees don't apply to AF - see LCL
 
 CustomsQuarantineInspectionNoWood
