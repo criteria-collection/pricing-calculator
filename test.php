@@ -16,6 +16,7 @@ foreach ( $json['data'] as $collection ) {
     if ($variation['shipping_height'] > 0) {
 
       $item_details = [
+        'id'                             => $variation['id'],
         'ShippingPackagingAdjustmentPct' => 15,
         'ItemWeightKG'                   => unit_conv(weight_unit_map($collection['meta']['measurement']['value']),
                                                       $variation['shipping_weight']),
