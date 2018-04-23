@@ -51,6 +51,8 @@ foreach ( $json['data'] as $collection ) {
         round($shipping_total,2),
         round($wholesale_price + $shipping_total,2),
       ]);
+
+      #print_r($collection);
     }
   }
 };
