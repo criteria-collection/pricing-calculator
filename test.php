@@ -6,9 +6,7 @@ error_reporting(-1);
 include 'criteria-functions.php';
 
 $options = parse_args();
-
 $str = file_get_contents($options['file']);
-
 $json = json_decode($str, true);
 
 csv_header();
