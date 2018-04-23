@@ -3,7 +3,13 @@
 
 include 'criteria-functions.php';
 
-$str = file_get_contents('test-data/CC_collection_dump_9418.json');
+$options = getopt(NULL, array("file:"));
+
+if (! isset($options['file']) ) {
+  throw new Exception("You must specify the data file via --file=<filename>\n");
+}
+
+$str = file_get_contents($options['file']);
 
 $json = json_decode($str, true);
 
