@@ -9,6 +9,18 @@ $json = json_decode($str, true);
 
 foreach ( $json['data'] as $product ) {
   foreach ( $product['variations'] as $variation ) {
+fputcsv(STDOUT,[
+  'id',
+  'Brand',
+  'Collection',
+  'Variation',
+  'Wholesale (AUD)',
+  'Shipping (AUD)',
+  'Retail (AUD)',
+]);
+
+foreach ( $json['data'] as $collection ) {
+  foreach ( $collection['variations'] as $variation ) {
     if ($variation['shipping_height'] > 0) {
 
       $item_details = [
@@ -27,6 +39,15 @@ foreach ( $json['data'] as $product ) {
       . ' - ' . ShippingTotal(0, $item_details, get_port_details())
       . "\n";
       #print_r($product);
+      fputcsv(STDOUT,[
+        $variation['id'],
+        $collection['meta']['brand']['name'],
+        $collection['title'],
+        get_variation_option($variation),
+        $wholesale_price,
+        round($shipping_total,2),
+        round($wholesale_price + $shipping_total,2),
+      ]);
     }
   }
 };
