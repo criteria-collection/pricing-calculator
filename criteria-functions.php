@@ -7,6 +7,7 @@ function ShippingInternational($ItemInputs, $PortInputs) {
     ShippingLCLTotal($ItemInputs, $PortInputs['lcl']),
     ShippingAFTotal($ItemInputs, $PortInputs['af'])
   );
+  calc_log($ItemInputs, 'BestPrice', $BestPrice, NULL );
 
   $CustomsQuarantineInspection;
   if ($ItemInputs['ItemHasWood']) {
@@ -21,22 +22,33 @@ function ShippingInternational($ItemInputs, $PortInputs) {
     $CustomsQuarantineInspection =
       $PortInputs['all']['CustomsQuarantineInspectionNoWood'];
   }
+  calc_log($ItemInputs, 'CustomsQuarantineInspection', $CustomsQuarantineInspection, NULL );
 
-return $BestPrice
+  $ShippingInternational = $BestPrice
        + $PortInputs['all']['CustomsQuarantinePerItem']
        + $CustomsQuarantineInspection;
+  calc_log($ItemInputs, 'ShippingInternational', $ShippingInternational, NULL );
+
+  return $ShippingInternational;
+
 }
 
 function ShippingLCLTotal($ItemInputs, $PortLCLInputs) {
+
+  foreach ( $PortLCLInputs as $key=>$value ) {
+    calc_log($ItemInputs, $key, $value, 'input');
+  }
 
   $ShippingLCL_Collection = max(
     $PortLCLInputs['ShippingLCL_Collection_Min'],
     $PortLCLInputs['ShippingLCL_Collection_MT']
     * $ItemInputs['ShippedItemWeightMT']
   );
+  calc_log($ItemInputs, 'ShippingLCL_Collection', $ShippingLCL_Collection, NULL );
 
   $ShippingLCL_DeliverySurcharge =
     1+($PortLCLInputs['ShippingLCL_DeliverySurchargePct']/100);
+  calc_log($ItemInputs, 'ShippingLCL_DeliverySurcharge', $ShippingLCL_DeliverySurcharge, NULL );
 
   $ShippingLCL_Delivery = max(
     $PortLCLInputs['ShippingLCL_Delivery_Min'],
@@ -46,66 +58,83 @@ function ShippingLCLTotal($ItemInputs, $PortLCLInputs) {
   + $ItemInputs['TailgateTruckRequired']
     ? $PortLCLInputs['ShippingLCL_DeliveryTailgateTruck']
     : 0;
+  calc_log($ItemInputs, 'ShippingLCL_Delivery', $ShippingLCL_Delivery, NULL );
 
-  return
+  $ShippingLCLTotal =
     $PortLCLInputs['ShippingLCLPerItem'] +
     $ShippingLCL_Collection +
     $ShippingLCL_Delivery +
     $PortLCLInputs['ShippingLCLPerWV']
     * $ItemInputs['ShippedItemWV'];
+  calc_log($ItemInputs, 'ShippingLCLTotal', $ShippingLCLTotal, NULL );
+
+  return $ShippingLCLTotal;
 
 }
 
 function ShippingAFTotal($ItemInputs, $PortAFInputs) {
+
+  foreach ( $PortAFInputs as $key=>$value ) {
+    calc_log($ItemInputs, $key, $value, 'input');
+  }
 
   $ShippingAF_Collection = max(
     $PortAFInputs['ShippingAF_Collection_Min'],
     $PortAFInputs['ShippingAF_Collection_CW']
     * $ItemInputs['ShippedItemCW']
   );
+  calc_log($ItemInputs, 'ShippingAF_Collection', $ShippingAF_Collection, NULL );
 
   $ShippingAF_THC = max(
     $PortAFInputs['ShippingAF_THC_Min'],
     $PortAFInputs['ShippingAF_THC_CW']
     * $ItemInputs['ShippedItemCW']
   );
+  calc_log($ItemInputs, 'ShippingAF_THC', $ShippingAF_THC, NULL );
 
   $ShippingAF_WarRisk = max(
     $PortAFInputs['ShippingAF_WarRisk_Min'],
     $PortAFInputs['ShippingAF_WarRisk_CW']
     * $ItemInputs['ShippedItemCW']
   );
+  calc_log($ItemInputs, 'ShippingAF_WarRisk', $ShippingAF_WarRisk, NULL );
 
   $ShippingAF_Security =
     $PortAFInputs['ShippingAF_Security_CW']
     * $ItemInputs['ShippedItemCW'];
+  calc_log($ItemInputs, 'ShippingAF_Security', $ShippingAF_Security, NULL );
 
   $ShippingAF_Freight = max(
     $PortAFInputs['ShippingAF_Freight_Min'],
     $PortAFInputs['ShippingAF_Freight_CW']
     * $ItemInputs['ShippedItemCW']
   );
+  calc_log($ItemInputs, 'ShippingAF_Freight', $ShippingAF_Freight, NULL );
 
   $ShippingAF_Fuel = max(
     $PortAFInputs['ShippingAF_Fuel_Min'],
     $PortAFInputs['ShippingAF_Fuel_CW']
     * $ItemInputs['ShippedItemCW']
   );
+  calc_log($ItemInputs, 'ShippingAF_Fuel', $ShippingAF_Fuel, NULL );
 
   $ShippingAF_ITF = max(
     $PortAFInputs['ShippingAF_ITF_Min'],
     $PortAFInputs['ShippingAF_ITF_MT']
     * $ItemInputs['ShippedItemWeightMT']
   );
+  calc_log($ItemInputs, 'ShippingAF_ITF', $ShippingAF_ITF, NULL );
 
   $ShippingAF_Handling = max(
     $PortAFInputs['ShippingAF_Handling_Min'],
     $PortAFInputs['ShippingAF_Handling_MT']
     * $ItemInputs['ShippedItemWeightMT']
   );
+  calc_log($ItemInputs, 'ShippingAF_Handling', $ShippingAF_Handling, NULL );
 
   $ShippingAF_DeliverySurcharge =
     1 + ($PortAFInputs['ShippingAF_DeliverySurchargePct']/100);
+  calc_log($ItemInputs, 'ShippingAF_DeliverySurcharge', $ShippingAF_DeliverySurcharge, NULL );
 
   $ShippingAF_Delivery = max(
     $PortAFInputs['ShippingAF_Delivery_Min'],
@@ -115,8 +144,9 @@ function ShippingAFTotal($ItemInputs, $PortAFInputs) {
   + $ItemInputs['TailgateTruckRequired']
     ? $PortAFInputs['ShippingAF_DeliveryTailgateTruck']
     : 0;
+  calc_log($ItemInputs, 'ShippingAF_Delivery', $ShippingAF_Delivery, NULL );
 
-  return
+  $ShippingAFTotal =
     $PortAFInputs['ShippingAFPerItem'] +
     $ShippingAF_Collection +
     $ShippingAF_THC +
@@ -127,32 +157,38 @@ function ShippingAFTotal($ItemInputs, $PortAFInputs) {
     $ShippingAF_ITF +
     $ShippingAF_Handling +
     $ShippingAF_Delivery;
+  calc_log($ItemInputs, 'ShippingAFTotal', $ShippingAFTotal, NULL );
+
+  return $ShippingAFTotal;
 }
 
 function ShippingDomestic($ItemInputs, $PortDFInputs) {
+
+  foreach ( $PortDFInputs as $key=>$value ) {
+    calc_log($ItemInputs, $key, $value, 'input');
+  }
 
   $ShippingDomesticCollection = max(
     $PortDFInputs['ShippingDomesticCollectionMin'],
     $PortDFInputs['ShippingDomesticCollectionPerM3']
     * $ItemInputs['ShippedItemVolumeM3']
   );
+  calc_log($ItemInputs, 'ShippingDomesticCollection', $ShippingDomesticCollection, NULL );
 
   $ShippingDomesticDeliverySurcharge =
     1 + ($PortDFInputs['ShippingDomesticDeliverySurchargePct']/100);
+  calc_log($ItemInputs, 'ShippingDomesticDeliverySurcharge', $ShippingDomesticDeliverySurcharge, NULL );
 
-  return $PortDFInputs['ShippingDomesticDelivery'] +
+  $ShippingDomestic = $PortDFInputs['ShippingDomesticDelivery'] +
     $ShippingDomesticCollection
     * $ShippingDomesticDeliverySurcharge;
+  calc_log($ItemInputs, 'ShippingDomestic', $ShippingDomestic, NULL );
 
 }
 
 function ShippingTotal($Domestic, $ItemInputs, $PortInputs) {
 
   calc_log($ItemInputs,'Domestic', $Domestic, 'input');
-
-  foreach ( $ItemInputs as $key=>$value ) {
-    calc_log($ItemInputs, $key, $value, 'input');
-  }
 
   foreach ( $ItemInputs as $key=>$value ) {
     calc_log($ItemInputs, $key, $value, 'input');
@@ -240,7 +276,6 @@ function weight_unit_map($unit){
 function calc_log ($item, $calculation, $calc_result, $note) {
 
   global $_CC_DEBUG;
-  if ( ! $_CC_DEBUG ) {
   if ( ! $_CC_DEBUG && ! getenv('_CC_DEBUG') ) {
     return;
   }
