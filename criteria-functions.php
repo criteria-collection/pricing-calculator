@@ -230,7 +230,6 @@ function weight_unit_map($unit){
     return 'lb';
   }
 
-  # TODO confirm this is the associated unit.
   if ($unit == 'mm') {
     return 'kg';
   }
