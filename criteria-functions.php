@@ -2,14 +2,6 @@
 
 error_reporting(-1);
 
-function warn ($message) {
-  global $DEBUG;
-  if ($DEBUG) {
-    $message = $message . "\n";
-    fwrite(STDERR, $message);
-  }
-}
-
 function ShippingInternational($ItemInputs, $PortInputs) {
   $BestPrice = min(
     ShippingLCLTotal($ItemInputs, $PortInputs['lcl']),
@@ -236,5 +228,10 @@ function weight_unit_map($unit){
   throw new Exception("Unhandled unit type conversion, unit = '$unit'.\n");
 
 };
+
+function warn ($message) {
+    $message = $message . "\n";
+    fwrite(STDERR, $message);
+}
 
 ?>
