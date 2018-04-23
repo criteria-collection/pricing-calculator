@@ -7,8 +7,6 @@ $str = file_get_contents('test-data/CC_collection_dump_9418.json');
 
 $json = json_decode($str, true);
 
-foreach ( $json['data'] as $product ) {
-  foreach ( $product['variations'] as $variation ) {
 fputcsv(STDOUT,[
   'id',
   'Brand',
