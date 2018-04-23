@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+error_reporting(-1);
+
 include 'criteria-functions.php';
 
 $options = parse_args();
