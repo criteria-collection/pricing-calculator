@@ -29,10 +29,6 @@ return $BestPrice
 
 function ShippingLCLTotal($ItemInputs, $PortLCLInputs) {
 
-  foreach ( $PortLCLInputs as $key=>$value ) {
-    warn($key . ' => ' . $value);
-  };
-
   $ShippingLCL_Collection = max(
     $PortLCLInputs['ShippingLCL_Collection_Min'],
     $PortLCLInputs['ShippingLCL_Collection_MT']
@@ -61,10 +57,6 @@ function ShippingLCLTotal($ItemInputs, $PortLCLInputs) {
 }
 
 function ShippingAFTotal($ItemInputs, $PortAFInputs) {
-
-  foreach ( $PortAFInputs as $key=>$value ) {
-    warn($key . ' => ' . $value);
-  };
 
   $ShippingAF_Collection = max(
     $PortAFInputs['ShippingAF_Collection_Min'],
@@ -183,10 +175,6 @@ function ShippingTotal($Domestic, $ItemInputs, $PortInputs) {
     $ItemInputs['ShippedItemVolumetricWeight'],
     $ItemInputs['ShippedItemWeightMT']
   );
-
-  foreach ( $ItemInputs as $key=>$value ) {
-    warn($key . ' => ' . $value);
-  };
 
   return $Domestic
     ? ShippingDomestic($ItemInputs, $PortInputs['domestic'])
