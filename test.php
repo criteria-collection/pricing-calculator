@@ -25,20 +25,23 @@ foreach ( $json['data'] as $collection ) {
 
       $item_details = [
         'ShippingPackagingAdjustmentPct' => 15,
-        'ItemWeightKG'                   => $variation['shipping_weight'],
-        'ItemLengthMtr'                  => $variation['shipping_length'],
-        'ItemWidthMtr'                   => $variation['shipping_depth'],
-        'ItemHeightMtr'                  => $variation['shipping_height'],
+        'ItemWeightKG'                   => unit_conv(weight_unit_map($collection['meta']['measurement']['value']),
+                                                      $variation['shipping_weight']),
+        'ItemLengthMtr'                  => unit_conv($collection['meta']['measurement']['value'],
+                                                      $variation['shipping_length']),
+        'ItemWidthMtr'                   => unit_conv($collection['meta']['measurement']['value'],
+                                                      $variation['shipping_depth']),
+        'ItemHeightMtr'                  => unit_conv($collection['meta']['measurement']['value'],
+                                                      $variation['shipping_height']),
         'ItemHasWood'                    => $variation['has_wood'] ? 1 : 0,
         'MinimumOrder'                   => 1, # Not in data hardcoded for now
         'TailgateTruckRequired'          => 0, # 1 for yes, 0 for no. Hardcoded for now
       ];
 
-      echo $product['meta']['brand']['name']
-      . ' - ' .$product['title']
-      . ' - ' . ShippingTotal(0, $item_details, get_port_details())
-      . "\n";
-      #print_r($product);
+      $wholesale_price = currency_conv($collection['meta']['currency']['value'],
+                                       $variation['wholesale_price']);
+      $shipping_total  = ShippingTotal(0, $item_details, get_port_details());
+
       fputcsv(STDOUT,[
         $variation['id'],
         $collection['meta']['brand']['name'],
