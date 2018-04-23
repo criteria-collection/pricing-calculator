@@ -148,37 +148,57 @@ function ShippingDomestic($ItemInputs, $PortDFInputs) {
 
 function ShippingTotal($Domestic, $ItemInputs, $PortInputs) {
 
+  calc_log($ItemInputs,'Domestic', $Domestic, 'input');
+
+  foreach ( $ItemInputs as $key=>$value ) {
+    calc_log($ItemInputs, $key, $value, 'input');
+  }
+
+  foreach ( $ItemInputs as $key=>$value ) {
+    calc_log($ItemInputs, $key, $value, 'input');
+  }
+
   $ItemInputs['ShippingPackagingAdjustment'] =
     1+($ItemInputs['ShippingPackagingAdjustmentPct']/100);
+  calc_log($ItemInputs,'ShippingPackagingAdjustment', NULL, NULL);
 
   $ItemInputs['ItemVolumeM3'] =
     $ItemInputs['ItemLengthMtr'] * $ItemInputs['ItemWidthMtr'] * $ItemInputs['ItemHeightMtr'];
+  calc_log($ItemInputs,'ItemVolumeM3', NULL, NULL);
 
   $ItemInputs['ShippedItemWeightMT'] =
     ($ItemInputs['ItemWeightKG'] * $ItemInputs['MinimumOrder'] / 1000)
     * $ItemInputs['ShippingPackagingAdjustment'];
+  calc_log($ItemInputs,'ShippedItemWeightMT', NULL, NULL);
 
   $ItemInputs['ShippedItemVolumeM3'] =
     $ItemInputs['ItemVolumeM3']
     * $ItemInputs['MinimumOrder']
     * $ItemInputs['ShippingPackagingAdjustment'];
+  calc_log($ItemInputs,'ShippedItemVolumeM3', NULL, NULL);
 
   $ItemInputs['ShippedItemWV'] = max(
     $ItemInputs['ShippedItemWeightMT'],
     $ItemInputs['ShippedItemVolumeM3']
   );
+  calc_log($ItemInputs,'ShippedItemWV', NULL, NULL);
 
   $ItemInputs['ShippedItemVolumetricWeight'] =
     $ItemInputs['ShippedItemVolumeM3'] * 167 / 1000;
+  calc_log($ItemInputs,'ShippedItemVolumetricWeight', NULL, NULL);
 
   $ItemInputs['ShippedItemCW'] = max(
     $ItemInputs['ShippedItemVolumetricWeight'],
     $ItemInputs['ShippedItemWeightMT']
   );
+  calc_log($ItemInputs,'ShippedItemCW', NULL, NULL);
 
-  return $Domestic
+  $ShippingTotal = $Domestic
     ? ShippingDomestic($ItemInputs, $PortInputs['domestic'])
     : ShippingInternational($ItemInputs, $PortInputs['international']);
+  calc_log($ItemInputs,'ShippingTotal', $ShippingTotal, NULL);
+
+  return $ShippingTotal;
 }
 
 function unit_conv($unit, $value){
