@@ -52,6 +52,15 @@ foreach ( $json['data'] as $collection ) {
   }
 };
 
+function get_variation_option ($variation) {
+
+  $option_arr = [];
+  foreach ( $variation['options'] as $option ) {
+    array_push($option_arr, $option['value']);
+  }
+
+  return implode(' ', $option_arr);
+}
 function get_port_details() {
   return
   # DB Shecher ex Brooklyn
