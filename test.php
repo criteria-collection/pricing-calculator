@@ -100,7 +100,6 @@ function currency_conv($unit, $value){
 
 function get_port_details() {
   return
-  # DB Shecher ex Brooklyn
   [
     'domestic' => [
       'ShippingDomesticCollectionMin'        => 1,
@@ -108,6 +107,7 @@ function get_port_details() {
       'ShippingDomesticDelivery'             => 3,
       'ShippingDomesticDeliverySurchargePct' => 4,
     ],
+    # DB Shecher ex Brooklyn
     'international' => [
       'all' => [
         'CustomsQuarantinePerItem'             => 106.20,
