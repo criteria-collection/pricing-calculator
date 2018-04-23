@@ -9,15 +9,7 @@ $str = file_get_contents($options['file']);
 
 $json = json_decode($str, true);
 
-fputcsv(STDOUT,[
-  'id',
-  'Brand',
-  'Collection',
-  'Variation',
-  'Wholesale (AUD)',
-  'Shipping (AUD)',
-  'Retail (AUD)',
-]);
+csv_header();
 
 foreach ( $json['data'] as $collection ) {
   foreach ( $collection['variations'] as $variation ) {
@@ -42,7 +34,7 @@ foreach ( $json['data'] as $collection ) {
                                        $variation['wholesale_price']);
       $shipping_total  = ShippingTotal(0, $item_details, get_port_details());
 
-      fputcsv(STDOUT,[
+      csv_data([
         $variation['id'],
         $collection['meta']['brand']['name'],
         $collection['title'],
@@ -65,6 +57,22 @@ function parse_args() {
   }
 
   return $options;
+}
+
+function csv_data ($data) {
+  fputcsv(STDOUT, $data);
+}
+
+function csv_header() {
+  csv_data([
+    'id',
+    'Brand',
+    'Collection',
+    'Variation',
+    'Wholesale (AUD)',
+    'Shipping (AUD)',
+    'Retail (AUD)',
+  ]);
 }
 
 function get_variation_option ($variation) {
