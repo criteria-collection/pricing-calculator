@@ -1,6 +1,5 @@
 <?php
 
-$DEBUG=0;
 error_reporting(-1);
 
 function warn ($message) {
