@@ -202,4 +202,41 @@ function ShippingTotal($Domestic, $ItemInputs, $PortInputs) {
     : ShippingInternational($ItemInputs, $PortInputs['international']);
 }
 
+function unit_conv($unit, $value){
+
+  if ($unit == 'in') {
+    return $value * 0.0254;
+  }
+
+  if ($unit == 'mm') {
+    return $value * 0.001;
+  }
+
+  if ($unit == 'lb') {
+    return $value * 0.45359237;
+  }
+
+  if ($unit == 'kg') {
+    return $value;
+  }
+
+  throw new Exception("Unhandled conversion, unit = '$unit'.\n");
+
+};
+
+function weight_unit_map($unit){
+
+  if ($unit == 'in') {
+    return 'lb';
+  }
+
+  # TODO confirm this is the associated unit.
+  if ($unit == 'mm') {
+    return 'kg';
+  }
+
+  throw new Exception("Unhandled unit type conversion, unit = '$unit'.\n");
+
+};
+
 ?>
