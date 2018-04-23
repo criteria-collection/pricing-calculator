@@ -61,6 +61,34 @@ function get_variation_option ($variation) {
 
   return implode(' ', $option_arr);
 }
+
+function currency_conv($unit, $value){
+
+  # This conversion should be managed within the CMS
+  # to allow Criteria to adjust the rate as required
+
+  $conversions = [
+    'USD' => 1.3,
+    'EUR' => NULL,
+    'JPY' => NULL,
+    'GBP' => NULL,
+    'AUD' => 1,
+    'CAD' => NULL,
+    'CHF' => NULL,
+    'CNY' => NULL,
+    'SEK' => NULL,
+    'NZD' => NULL,
+    'SGD' => NULL,
+  ];
+
+  if (! isset($conversions[$unit]) ) {
+    throw new Exception("Unhandled currency conversion, unit = '$unit'.\n");
+  }
+
+  return $value * $conversions[$unit];
+
+};
+
 function get_port_details() {
   return
   # DB Shecher ex Brooklyn
