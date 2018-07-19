@@ -80,7 +80,9 @@ ItemWeightKG: Item's unpackaged weight in kilograms
 ItemVolumeM3 = Item Length Mtr * Item Width Mtr * Item Height Mtr
 MinimumOrder: Item's minimum order size
 
-ShippedItemWeightMT = (ItemWeightKG * MinimumOrder / 1000) * ShippingPackagingAdjustment
+ShippedItemWeightKG = (ItemWeightKG * MinimumOrder) * ShippingPackagingAdjustment
+
+ShippedItemWeightMT = ShippedItemWeightKG / 1000
 
 ShippedItemVolumeM3 = ItemVolumeM3 * MinimumOrder * ShippingPackagingAdjustment
 
