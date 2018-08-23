@@ -7,8 +7,14 @@ error_reporting(-1);
 include 'lib/criteria-functions.php';
 
 $options = parse_args();
+
 $str = file_get_contents($options['file']);
 $json = json_decode($str, true);
+
+$currency_conversions_to_aud = json_decode(
+  file_get_contents($options['currency']),
+  true
+);
 
 csv_header();
 
@@ -34,7 +40,7 @@ foreach ( $json['data'] as $collection ) {
 
       $wholesale_price = currency_conv($collection['meta']['currency']['value'],
                                        $variation['wholesale_price']);
-      $shipping_total  = ShippingTotal(0, $item_details, get_port_details());
+      $shipping_total  = ShippingTotal(0, $item_details, get_port_details($options['port']));
 
       csv_data([
         $variation['id'],
@@ -52,10 +58,18 @@ foreach ( $json['data'] as $collection ) {
 };
 
 function parse_args() {
-  $options = getopt(NULL, array("file:"));
+  $options = getopt(NULL, array("file:", "currency:", "port:"));
 
   if (! isset($options['file']) ) {
     throw new Exception("You must specify the data file via --file=<filename>\n");
+  }
+
+  if (! isset($options['currency']) ) {
+    $options['currency'] = 'currency.json';
+  }
+
+  if (! isset($options['port']) ) {
+    $options['port'] = 'port.json';
   }
 
   return $options;
@@ -92,80 +106,19 @@ function currency_conv($unit, $value){
   # This conversion should be managed within the CMS
   # to allow Criteria to adjust the rate as required
 
-  $conversions = [
-    'USD' => 1.3,
-    'EUR' => NULL,
-    'JPY' => NULL,
-    'GBP' => NULL,
-    'AUD' => 1,
-    'CAD' => NULL,
-    'CHF' => NULL,
-    'CNY' => NULL,
-    'SEK' => NULL,
-    'NZD' => NULL,
-    'SGD' => NULL,
-  ];
-
-  if (! isset($conversions[$unit]) ) {
+  if (! isset($GLOBALS['currency_conversions_to_aud'][$unit]) ) {
     throw new Exception("Unhandled currency conversion, unit = '$unit'.\n");
   }
 
-  return $value * $conversions[$unit];
+  return $value * $GLOBALS['currency_conversions_to_aud'][$unit];
 
 };
 
-function get_port_details() {
-  return
-  [
-    'domestic' => [
-      'ShippingDomesticCollectionMin'        => 1,
-      'ShippingDomesticCollectionPerM3'      => 2,
-      'ShippingDomesticDelivery'             => 3,
-      'ShippingDomesticDeliverySurchargePct' => 4,
-    ],
-    # DB Shecher ex Brooklyn
-    'international' => [
-      'all' => [
-        'CustomsQuarantinePerItem'             => 106.20,
-        'CustomsQuarantineInspectionNoWood'    =>  40.00,
-        'CustomsQuarantineInspectionWoodMin'   => 130.00,
-        'CustomsQuarantineInspectionWoodPerM3' => 150.00,
-
-      ],
-      'lcl' => [
-        'ShippingLCL_Collection_Min'        => 326.40,
-        'ShippingLCL_Collection_MT'         => 369.4545455,
-        'ShippingLCLPerItem'                => 648.00,
-        'ShippingLCL_Delivery_Min'          =>  85.00,
-        'ShippingLCL_Delivery_WV'           =>  25.00,
-        'ShippingLCL_DeliverySurchargePct'  =>  16.00,
-        'ShippingLCL_DeliveryTailgateTruck' => 130.00,
-        'ShippingLCLPerWV'                  => 367.30,
-      ],
-      'af' => [
-        'ShippingAFPerItem'                =>  455.56,
-        'ShippingAF_Collection_Min'        =>   89.60,
-        'ShippingAF_Collection_CW'         =>  486.40,
-        'ShippingAF_THC_Min'               =>  115.20,
-        'ShippingAF_THC_CW'                =>  192.00,
-        'ShippingAF_WarRisk_Min'           =>    0.00,
-        'ShippingAF_WarRisk_CW'            =>  204.80,
-        'ShippingAF_Security_CW'           =>    0.00,
-        'ShippingAF_Freight_Min'           =>  160.00,
-        'ShippingAF_Freight_CW'            => 4992.00,
-        'ShippingAF_Fuel_Min'              =>    0.00,
-        'ShippingAF_Fuel_CW'               => 1600.00,
-        'ShippingAF_ITF_Min'               =>  100.00,
-        'ShippingAF_ITF_MT'                =>  250.00,
-        'ShippingAF_Handling_Min'          =>   47.00,
-        'ShippingAF_Handling_MT'           =>  470.00,
-        'ShippingAF_Delivery_Min'          =>   50.00,
-        'ShippingAF_Delivery_WV'           =>  320.00,
-        'ShippingAF_DeliveryTailgateTruck' =>  130.00,
-        'ShippingAF_DeliverySurchargePct'  =>   17.00,
-      ]
-    ]
-  ];
+function get_port_details($filename) {
+  return json_decode(
+    file_get_contents($filename),
+    true
+  );
 }
 
 ?>
