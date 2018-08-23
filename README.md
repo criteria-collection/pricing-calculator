@@ -1,13 +1,10 @@
-Testing
-=======
+# Testing
 
 `_CC_DEBUG=1 ./test.php --file=test-data/CC_collection_dump_9418.json 2>> calc-log.csv 1>> pricing-out.csv`
 
-Shipping computation
-====================
+# Shipping computation
 
-Introduction
-------------
+## Introduction
 
 A "Schedule of Rates" for shipping will be recorded within the CMS. These will be computed outside the CMS and updated as necessary (e.g. quarterly). Shipping costs depend on the product origin:
 
@@ -60,9 +57,9 @@ International shipping also include a local delivery fee since the shippers char
 
 Import and quarantine for international shipping costs include fumigation when the product incorporates wood and the price of that depends on volume.
 
+## Variable Definitions
 
-Suffixes
---------
+### Suffixes
 
 ```
 M: Metres
@@ -74,8 +71,7 @@ CW: Chargeable Weight (used in air freight)
 Pct: Percent
 ```
 
-Item based inputs
------------------
+### Item based inputs
 
 ```
 ShippingPackagingAdjustmentPct = % increase to deal with packaging (eg 15%)
@@ -84,7 +80,9 @@ ItemWeightKG: Item's unpackaged weight in kilograms
 ItemVolumeM3 = Item Length Mtr * Item Width Mtr * Item Height Mtr
 MinimumOrder: Item's minimum order size
 
-ShippedItemWeightMT = (ItemWeightKG * MinimumOrder / 1000) * ShippingPackagingAdjustment
+ShippedItemWeightKG = (ItemWeightKG * MinimumOrder) * ShippingPackagingAdjustment
+
+ShippedItemWeightMT = ShippedItemWeightKG / 1000
 
 ShippedItemVolumeM3 = ItemVolumeM3 * MinimumOrder * ShippingPackagingAdjustment
 
@@ -95,8 +93,7 @@ ShippedItemVolumetricWeight = ShippedItemVolumeM3 * 167 / 1000
 ShippedItemCW = MAX(ShippedItemVolumetricWeight, ShippedItemWeightMT)
 ```
 
-Per port International LCL
---------------------------
+### Per port International LCL
 
 ```
 ShippingLCL_Collection_Min
@@ -163,8 +160,7 @@ ShippingLCLTotal =
   ShippingLCLPerWV * ShippedItemWV
 ```
 
-Per port International AirFreight (AF)
---------------------------------------
+### Per port International AirFreight (AF)
 
 ```
 ShippingAF_Collection_Min
@@ -298,8 +294,7 @@ ShippingAFTotal =
   ShippingAF_Delivery
 ```
 
-Domestic Freight
-----------------
+### Domestic Freight
 
 ```
 ShippingDomesticCollectionMin
@@ -325,8 +320,7 @@ ShippingDomesticTotal =
   ShippingDomesticCollection * ShippingDomesticDeliverySurcharge
 ```
 
-Shipping Port Total
--------------------
+### Shipping Port Total
 
 ```
 This is the minimum cost of shipping comparing LCL and Air Freight
@@ -338,8 +332,7 @@ ELSE
 END IF  
 ```
 
-Same for all international ports
---------------------------------
+### Same for all international ports
 
 ```
 CustomsQuarantinePerItem
@@ -378,8 +371,7 @@ CustomsQuarantineTotal =
   CustomsQuarantineInspection
 ```
 
-Shipping Total
---------------
+### Shipping Total
 
 ```
 ShippingTotal =
