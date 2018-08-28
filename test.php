@@ -114,7 +114,7 @@ function currency_conv($unit, $value){
 
 };
 
-function get_port_details($filename) {
+function load_data($filename) {
   return json_decode(
     file_get_contents($filename),
     true
