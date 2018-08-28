@@ -6,6 +6,7 @@ error_reporting(-1);
 
 include 'lib/criteria-functions.php';
 
+# Parse command line
 $options = parse_args();
 
 $str = file_get_contents($options['file']);
