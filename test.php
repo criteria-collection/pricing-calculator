@@ -6,15 +6,17 @@ error_reporting(-1);
 
 include 'lib/criteria-functions.php';
 
+# Parse command line
 $options = parse_args();
 
-$str = file_get_contents($options['file']);
-$json = json_decode($str, true);
+# Get collection data
+$coll_data = load_data($options['file']);
 
-$currency_conversions_to_aud = json_decode(
-  file_get_contents($options['currency']),
-  true
-);
+# Get map from brand-slug to port
+$brand_port = load_data('brand-port.json');
+
+# Get currency conversions
+$currency_conversions_to_aud = load_data($options['currency']);
 
 csv_header();
 
@@ -40,7 +42,7 @@ foreach ( $json['data'] as $collection ) {
 
       $wholesale_price = currency_conv($collection['meta']['currency']['value'],
                                        $variation['wholesale_price']);
-      $shipping_total  = ShippingTotal(0, $item_details, get_port_details($options['port']));
+      $shipping_total  = ShippingTotal(0, $item_details, load_data($options['port']));
 
       csv_data([
         $variation['id'],
@@ -114,7 +116,7 @@ function currency_conv($unit, $value){
 
 };
 
-function get_port_details($filename) {
+function load_data($filename) {
   return json_decode(
     file_get_contents($filename),
     true
