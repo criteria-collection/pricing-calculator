@@ -13,7 +13,7 @@ $options = parse_args();
 $coll_data = load_data($options['file']);
 
 # Get map from brand-slug to port
-$brand_port = load_data('brand-port.json');
+$brand_port = load_data('test-data/brand-port.json');
 
 # Get currency conversions
 $currency_conversions_to_aud = load_data($options['currency']);
@@ -76,11 +76,11 @@ function parse_args() {
   }
 
   if (! isset($options['currency']) ) {
-    $options['currency'] = 'currency.json';
+    $options['currency'] = 'test-data/currency.json';
   }
 
   if (! isset($options['port']) ) {
-    $options['port'] = 'port.json';
+    $options['port'] = 'test-data/port.json';
   }
 
   return $options;
