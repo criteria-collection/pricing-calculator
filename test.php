@@ -20,8 +20,14 @@ $currency_conversions_to_aud = load_data($options['currency']);
 
 csv_header();
 
-foreach ( $json['data'] as $collection ) {
+foreach ( $coll_data['data'] as $collection ) {
+
+  $minimum_order = $collection['order']['minimum_order']
+                   ? $collection['order']['minimum_order']
+                   : 1;
+
   foreach ( $collection['variations'] as $variation ) {
+
     if ($variation['shipping_height'] > 0) {
 
       $item_details = [
@@ -36,7 +42,7 @@ foreach ( $json['data'] as $collection ) {
         'ItemHeightMtr'                  => unit_conv($collection['meta']['measurement']['value'],
                                                       $variation['shipping_height']),
         'ItemHasWood'                    => $variation['has_wood'] ? 1 : 0,
-        'MinimumOrder'                   => 1, # Not in data. Hardcoded for now
+        'MinimumOrder'                   => $minimum_order, # Not in data. Hardcoded for now
         'TailgateTruckRequired'          => 0, # 1 for yes, 0 for no. Not in data. Hardcoded for now
       ];
 
