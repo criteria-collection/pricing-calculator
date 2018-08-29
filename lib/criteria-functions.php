@@ -298,8 +298,8 @@ function calc_log ($item, $calculation, $calc_result, $note) {
 }
 
 function warn ($message) {
-    $message = $message . "\n";
-    fwrite(STDERR, $message);
+  $message = $message . "\n";
+  fwrite(STDERR, $message);
 }
 
 ?>
