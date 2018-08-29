@@ -46,6 +46,7 @@ foreach ( $coll_data['data'] as $collection ) {
         'TailgateTruckRequired'          => 0, # 1 for yes, 0 for no. Not in data. Hardcoded for now
       ];
 
+
       $wholesale_price = currency_conv($collection['meta']['currency']['value'],
                                        $variation['wholesale_price']);
       $shipping_total  = ShippingTotal(0, $item_details, load_data($options['port']));
@@ -55,6 +56,8 @@ foreach ( $coll_data['data'] as $collection ) {
         $collection['meta']['brand']['name'],
         $collection['title'],
         get_variation_option($variation),
+        $variation['wholesale_price'],
+        $collection['meta']['currency']['value'],
         $wholesale_price,
         round($shipping_total,2),
         round($wholesale_price + $shipping_total,2),
@@ -93,6 +96,8 @@ function csv_header() {
     'Brand',
     'Collection',
     'Variation',
+    'Wholesale',
+    'Currency',
     'Wholesale (AUD)',
     'Shipping (AUD)',
     'Retail (AUD)',
