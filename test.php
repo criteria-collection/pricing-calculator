@@ -13,10 +13,13 @@ $options = parse_args();
 $coll_data = load_data($options['file']);
 
 # Get map from brand-slug to port
-$brand_port = load_data('brand-port.json');
+$brand_port = load_data('test-data/brand-port.json');
 
 # Get currency conversions
 $currency_conversions_to_aud = load_data($options['currency']);
+
+# Load port data
+$all_port_data = load_data($options['ports']);
 
 csv_header();
 
@@ -28,6 +31,7 @@ foreach ( $coll_data['data'] as $collection ) {
 
   foreach ( $collection['variations'] as $variation ) {
 
+    # Exclude variations with insufficient data.
     if ($variation['shipping_height'] > 0) {
 
       $item_details = [
@@ -46,38 +50,52 @@ foreach ( $coll_data['data'] as $collection ) {
         'TailgateTruckRequired'          => 0, # 1 for yes, 0 for no. Not in data. Hardcoded for now
       ];
 
-      $wholesale_price = currency_conv($collection['meta']['currency']['value'],
-                                       $variation['wholesale_price']);
-      $shipping_total  = ShippingTotal(0, $item_details, load_data($options['port']));
+      $shipping_total = ShippingTotal(
+        $item_details,
+        $all_port_data['all'],
+        $all_port_data['port'][$brand_port[$collection['meta']['brand']['slug']]]
+      );
 
       csv_data([
         $variation['id'],
         $collection['meta']['brand']['name'],
         $collection['title'],
         get_variation_option($variation),
-        $wholesale_price,
+        $collection['meta']['currency']['value'],
+        $variation['wholesale_price'],
+        currency_conv(
+          $collection['meta']['currency']['value'],
+          $variation['wholesale_price']
+        ),
         round($shipping_total,2),
-        round($wholesale_price + $shipping_total,2),
+        round(currency_conv(
+          $collection['meta']['currency']['value'],
+          $shipping_total
+        ),2),
+        round($variation['wholesale_price'] + $shipping_total, 2),
+        round(currency_conv(
+          $collection['meta']['currency']['value'],
+          $variation['wholesale_price'] + $shipping_total
+        ),2),
       ]);
-
       #print_r($collection);
     }
   }
 };
 
 function parse_args() {
-  $options = getopt(NULL, array("file:", "currency:", "port:"));
+  $options = getopt(NULL, array("file:", "currency:", "ports:"));
 
   if (! isset($options['file']) ) {
-    throw new Exception("You must specify the data file via --file=<filename>\n");
+    $options['file'] = 'test-data/export.json';
   }
 
   if (! isset($options['currency']) ) {
-    $options['currency'] = 'currency.json';
+    $options['currency'] = 'test-data/currency.json';
   }
 
-  if (! isset($options['port']) ) {
-    $options['port'] = 'port.json';
+  if (! isset($options['ports']) ) {
+    $options['ports'] = 'test-data/ports.json';
   }
 
   return $options;
@@ -93,8 +111,12 @@ function csv_header() {
     'Brand',
     'Collection',
     'Variation',
+    'Currency',
+    'Wholesale',
     'Wholesale (AUD)',
+    'Shipping',
     'Shipping (AUD)',
+    'Retail',
     'Retail (AUD)',
   ]);
 }

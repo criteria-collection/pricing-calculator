@@ -2,9 +2,9 @@
 
 error_reporting(-1);
 
-function ShippingInternational($ItemInputs, $PortInputs) {
+function ShippingInternational($ItemInputs, $PortInputsAll, $PortInputs) {
 
-  foreach ( $PortInputs['all'] as $key=>$value ) {
+  foreach ( $PortInputsAll as $key=>$value ) {
     calc_log($ItemInputs, $key, $value, 'input');
   }
 
@@ -18,19 +18,19 @@ function ShippingInternational($ItemInputs, $PortInputs) {
   if ($ItemInputs['ItemHasWood']) {
 
     $CustomsQuarantineInspection = max(
-      $PortInputs['all']['CustomsQuarantineInspectionWoodMin'],
-      $PortInputs['all']['CustomsQuarantineInspectionWoodPerM3']
+      $PortInputsAll['CustomsQuarantineInspectionWoodMin'],
+      $PortInputsAll['CustomsQuarantineInspectionWoodPerM3']
       * $ItemInputs['ShippedItemVolumeM3']
     );
   }
   else {
     $CustomsQuarantineInspection =
-      $PortInputs['all']['CustomsQuarantineInspectionNoWood'];
+      $PortInputsAll['CustomsQuarantineInspectionNoWood'];
   }
   calc_log($ItemInputs, 'CustomsQuarantineInspection', $CustomsQuarantineInspection, NULL );
 
   $ShippingInternational = $BestPrice
-       + $PortInputs['all']['CustomsQuarantinePerItem']
+       + $PortInputsAll['CustomsQuarantinePerItem']
        + $CustomsQuarantineInspection;
   calc_log($ItemInputs, 'ShippingInternational', $ShippingInternational, NULL );
 
@@ -191,9 +191,9 @@ function ShippingDomestic($ItemInputs, $PortDFInputs) {
 
 }
 
-function ShippingTotal($Domestic, $ItemInputs, $PortInputs) {
+function ShippingTotal($ItemInputs, $PortInputsAll, $PortInputs) {
 
-  calc_log($ItemInputs,'Domestic', $Domestic, 'input');
+  calc_log($ItemInputs,'Domestic', $PortInputs['domestic'], 'input');
 
   foreach ( $ItemInputs as $key=>$value ) {
     calc_log($ItemInputs, $key, $value, 'input');
@@ -234,9 +234,13 @@ function ShippingTotal($Domestic, $ItemInputs, $PortInputs) {
   );
   calc_log($ItemInputs,'ShippedItemCW', NULL, NULL);
 
-  $ShippingTotal = $Domestic
-    ? ShippingDomestic($ItemInputs, $PortInputs['domestic'])
-    : ShippingInternational($ItemInputs, $PortInputs['international']);
+  $ShippingTotal = $PortInputs['domestic']
+    ? ShippingDomestic($ItemInputs, $PortInputs)
+    : ShippingInternational(
+        $ItemInputs,
+        $PortInputsAll['international'],
+        $PortInputs
+    );
   calc_log($ItemInputs,'ShippingTotal', $ShippingTotal, NULL);
 
   return $ShippingTotal;
@@ -298,8 +302,8 @@ function calc_log ($item, $calculation, $calc_result, $note) {
 }
 
 function warn ($message) {
-    $message = $message . "\n";
-    fwrite(STDERR, $message);
+  $message = $message . "\n";
+  fwrite(STDERR, $message);
 }
 
 ?>

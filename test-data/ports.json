@@ -1,0 +1,90 @@
+{
+  "all": {
+    "domestic": null,
+    "international": {
+      "CustomsQuarantinePerItem": 106.2,
+      "CustomsQuarantineInspectionNoWood": 40,
+      "CustomsQuarantineInspectionWoodMin": 130,
+      "CustomsQuarantineInspectionWoodPerM3": 150
+    }
+  },
+  "port": {
+    "sydney": {
+      "domestic": true,
+      "ShippingDomesticCollectionMin": 1,
+      "ShippingDomesticCollectionPerM3": 2,
+      "ShippingDomesticDelivery": 3,
+      "ShippingDomesticDeliverySurchargePct": 4
+    },
+    "brooklyn": {
+      "domestic": false,
+      "lcl": {
+        "ShippingLCL_Collection_Min": 326.4,
+        "ShippingLCL_Collection_MT": 369.4545455,
+        "ShippingLCLPerItem": 648,
+        "ShippingLCL_Delivery_Min": 85,
+        "ShippingLCL_Delivery_WV": 25,
+        "ShippingLCL_DeliverySurchargePct": 16,
+        "ShippingLCL_DeliveryTailgateTruck": 130,
+        "ShippingLCLPerWV": 367.3
+      },
+      "af": {
+        "ShippingAFPerItem": 455.56,
+        "ShippingAF_Collection_Min": 89.6,
+        "ShippingAF_Collection_CW": 486.4,
+        "ShippingAF_THC_Min": 115.2,
+        "ShippingAF_THC_CW": 192,
+        "ShippingAF_WarRisk_Min": 0,
+        "ShippingAF_WarRisk_CW": 204.8,
+        "ShippingAF_Security_CW": 0,
+        "ShippingAF_Freight_Min": 160,
+        "ShippingAF_Freight_CW": 4992,
+        "ShippingAF_Fuel_Min": 0,
+        "ShippingAF_Fuel_CW": 1600,
+        "ShippingAF_ITF_Min": 100,
+        "ShippingAF_ITF_MT": 250,
+        "ShippingAF_Handling_Min": 47,
+        "ShippingAF_Handling_MT": 470,
+        "ShippingAF_Delivery_Min": 50,
+        "ShippingAF_Delivery_WV": 320,
+        "ShippingAF_DeliveryTailgateTruck": 130,
+        "ShippingAF_DeliverySurchargePct": 17
+      }
+    },
+    "milan": {
+      "domestic": false,
+      "lcl": {
+        "ShippingLCL_Collection_Min": 326.4,
+        "ShippingLCL_Collection_MT": 369.4545455,
+        "ShippingLCLPerItem": 648,
+        "ShippingLCL_Delivery_Min": 85,
+        "ShippingLCL_Delivery_WV": 25,
+        "ShippingLCL_DeliverySurchargePct": 16,
+        "ShippingLCL_DeliveryTailgateTruck": 130,
+        "ShippingLCLPerWV": 367.3
+      },
+      "af": {
+        "ShippingAFPerItem": 455.56,
+        "ShippingAF_Collection_Min": 89.6,
+        "ShippingAF_Collection_CW": 486.4,
+        "ShippingAF_THC_Min": 115.2,
+        "ShippingAF_THC_CW": 192,
+        "ShippingAF_WarRisk_Min": 0,
+        "ShippingAF_WarRisk_CW": 204.8,
+        "ShippingAF_Security_CW": 0,
+        "ShippingAF_Freight_Min": 160,
+        "ShippingAF_Freight_CW": 4992,
+        "ShippingAF_Fuel_Min": 0,
+        "ShippingAF_Fuel_CW": 1600,
+        "ShippingAF_ITF_Min": 100,
+        "ShippingAF_ITF_MT": 250,
+        "ShippingAF_Handling_Min": 47,
+        "ShippingAF_Handling_MT": 470,
+        "ShippingAF_Delivery_Min": 50,
+        "ShippingAF_Delivery_WV": 320,
+        "ShippingAF_DeliveryTailgateTruck": 130,
+        "ShippingAF_DeliverySurchargePct": 17
+      }
+    }
+  }
+}
