@@ -50,10 +50,15 @@ foreach ( $coll_data['data'] as $collection ) {
         'TailgateTruckRequired'          => 0, # 1 for yes, 0 for no. Not in data. Hardcoded for now
       ];
 
-      $shipping_total = ShippingTotal(
+      $shipping_total_aud = ShippingTotal(
         $item_details,
         $all_port_data['all'],
         $all_port_data['port'][$brand_port[$collection['meta']['brand']['slug']]]
+      );
+
+      $wholesale_price_aud = currency_conv_to_aud(
+        $collection['meta']['currency']['value'],
+        $variation['wholesale_price']
       );
 
       csv_data([
@@ -61,22 +66,36 @@ foreach ( $coll_data['data'] as $collection ) {
         $collection['meta']['brand']['name'],
         $collection['title'],
         get_variation_option($variation),
+        # currency
         $collection['meta']['currency']['value'],
+        # wholesale price in native currency
         $variation['wholesale_price'],
-        currency_conv(
+        # wholesale price AUD
+        $wholesale_price_aud,
+        # shipping total in native currency
+        round(currency_conv_from_aud(
           $collection['meta']['currency']['value'],
-          $variation['wholesale_price']
+          $shipping_total_aud
+        ),2),
+        # shipping total AUD
+        round($shipping_total_aud,2),
+        # retail in native currency
+        round(
+          $variation['wholesale_price'] +
+          currency_conv_from_aud(
+            $collection['meta']['currency']['value'],
+            $shipping_total_aud
+          ),2
         ),
-        round($shipping_total,2),
-        round(currency_conv(
-          $collection['meta']['currency']['value'],
-          $shipping_total
-        ),2),
-        round($variation['wholesale_price'] + $shipping_total, 2),
-        round(currency_conv(
-          $collection['meta']['currency']['value'],
-          $variation['wholesale_price'] + $shipping_total
-        ),2),
+        # retail AUD
+        round(
+          currency_conv_to_aud(
+            $collection['meta']['currency']['value'],
+            $variation['wholesale_price']
+          ) +
+          $shipping_total_aud
+          ,2
+        )
       ]);
       #print_r($collection);
     }
@@ -131,7 +150,7 @@ function get_variation_option ($variation) {
   return implode(' ', $option_arr);
 }
 
-function currency_conv($unit, $value){
+function currency_conv_to_aud($unit, $value){
 
   # This conversion should be managed within the CMS
   # to allow Criteria to adjust the rate as required
@@ -141,6 +160,19 @@ function currency_conv($unit, $value){
   }
 
   return $value * $GLOBALS['currency_conversions_to_aud'][$unit];
+
+};
+
+function currency_conv_from_aud($unit, $value){
+
+  # This conversion should be managed within the CMS
+  # to allow Criteria to adjust the rate as required
+
+  if (! isset($GLOBALS['currency_conversions_to_aud'][$unit]) ) {
+    throw new Exception("Unhandled currency conversion, unit = '$unit'.\n");
+  }
+
+  return $value * (1/$GLOBALS['currency_conversions_to_aud'][$unit]);
 
 };
 
