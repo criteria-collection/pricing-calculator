@@ -104,9 +104,11 @@ function ShippingAFTotal($ItemInputs, $PortAFInputs) {
   );
   calc_log($ItemInputs, 'ShippingAF_WarRisk', $ShippingAF_WarRisk, NULL );
 
-  $ShippingAF_Security =
+  $ShippingAF_Security = max(
+    $PortAFInputs['ShippingAF_Security_Min'],
     $PortAFInputs['ShippingAF_Security_CW']
-    * $ItemInputs['ShippedItemCW'];
+    * $ItemInputs['ShippedItemCW']
+  );
   calc_log($ItemInputs, 'ShippingAF_Security', $ShippingAF_Security, NULL );
 
   $ShippingAF_Freight = max(
@@ -167,6 +169,35 @@ function ShippingAFTotal($ItemInputs, $PortAFInputs) {
   return $ShippingAFTotal;
 }
 
+function ShippingIACTotal($ItemInputs, $PortIACInputs) {
+
+  foreach ( $PortIACInputs as $key=>$value ) {
+    calc_log($ItemInputs, $key, $value, 'input');
+  }
+
+  $ShippingIAC_CW = max(
+    $PortIACInputs['$ShippingIAC_WeightKG_Min'],
+    $PortIACInputs[ShippingIAC_VolumeConversion] * $ItemInputs['ShippedItemVolumeM3'],
+    $ItemInputs['ShippedItemWeightKG']
+  );
+  calc_log($ItemInputs, 'ShippingIAC_CW', $ShippingIAC_CW, NULL );
+
+
+
+  ShippingIACPerItem
+  ShippingIAC_VolumeConversion
+  ShippingIAC_WeightKG_Min
+  ShippingIAC_CustomsThreshhold
+  ShippingIAC_CustomsCharge
+  ShippingIAC_DeliverySurchargePct
+  ShippingIAC_Fx_Offset
+  ShippingIAC_Fx_Multiplier
+
+
+  return $ShippingIACTotal;
+
+}
+
 function ShippingDomestic($ItemInputs, $PortDFInputs) {
 
   foreach ( $PortDFInputs as $key=>$value ) {
@@ -189,6 +220,7 @@ function ShippingDomestic($ItemInputs, $PortDFInputs) {
     * $ShippingDomesticDeliverySurcharge;
   calc_log($ItemInputs, 'ShippingDomestic', $ShippingDomestic, NULL );
 
+  return $ShippingDomestic;
 }
 
 function ShippingTotal($ItemInputs, $PortInputsAll, $PortInputs) {
