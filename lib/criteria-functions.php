@@ -10,7 +10,8 @@ function ShippingInternational($ItemInputs, $PortInputsAll, $PortInputs) {
 
   $BestPrice = min(
     ShippingLCLTotal($ItemInputs, $PortInputs['lcl']),
-    ShippingAFTotal($ItemInputs, $PortInputs['af'])
+    ShippingAFTotal($ItemInputs, $PortInputs['af']),
+    ShippingIACTotal($ItemInputs, $PortInputs['iac'])
   );
   calc_log($ItemInputs, 'BestPrice', $BestPrice, NULL );
 
@@ -176,26 +177,37 @@ function ShippingIACTotal($ItemInputs, $PortIACInputs) {
   }
 
   $ShippingIAC_CW = max(
-    $PortIACInputs['$ShippingIAC_WeightKG_Min'],
-    $PortIACInputs[ShippingIAC_VolumeConversion] * $ItemInputs['ShippedItemVolumeM3'],
+    $PortIACInputs['ShippingIAC_WeightKG_Min'],
+    $PortIACInputs['ShippingIAC_VolumeConversion'] * $ItemInputs['ShippedItemVolumeM3'],
     $ItemInputs['ShippedItemWeightKG']
   );
   calc_log($ItemInputs, 'ShippingIAC_CW', $ShippingIAC_CW, NULL );
 
+  $ShippingIAC_CustomsChargeTotal =
+    $ItemInputs['ItemWholesalePriceAUD'] > $PortIACInputs['ShippingIAC_CustomsThreshhold']
+    ? $PortIACInputs['ShippingIAC_CustomsCharge']
+    : 0;
+  calc_log($ItemInputs, 'ShippingIAC_CustomsChargeTotal', $ShippingIAC_CustomsChargeTotal, NULL);
 
+  $ShippingIAC_FxTotal =
+    $PortIACInputs['ShippingIAC_Fx_Offset']
+    + ($PortIACInputs['ShippingIAC_Fx_Multiplier'] * $ShippingIAC_CW);
+  calc_log($ItemInputs, 'ShippingIAC_FxTotal', $ShippingIAC_FxTotal, NULL);
 
-  ShippingIACPerItem
-  ShippingIAC_VolumeConversion
-  ShippingIAC_WeightKG_Min
-  ShippingIAC_CustomsThreshhold
-  ShippingIAC_CustomsCharge
-  ShippingIAC_DeliverySurchargePct
-  ShippingIAC_Fx_Offset
-  ShippingIAC_Fx_Multiplier
+  $ShippingIAC_DeliveryPreFuel =
+    $ShippingIAC_FxTotal
+    + $PortIACInputs['ShippingIACPerItem']
+    + $ShippingIAC_CustomsChargeTotal ;
+  calc_log($ItemInputs, 'ShippingIAC_DeliveryPreFuel', $ShippingIAC_DeliveryPreFuel, NULL);
 
+  $ShippingIAC_DeliverySurcharge =
+    1 + ($PortIACInputs['ShippingIAC_DeliverySurchargePct']/100);
+  calc_log($ItemInputs, 'ShippingIAC_DeliverySurcharge', $ShippingIAC_DeliverySurcharge, NULL );
+
+  $ShippingIACTotal = $ShippingIAC_DeliveryPreFuel * $ShippingIAC_DeliverySurcharge;
+  calc_log($ItemInputs, 'ShippingIACTotal', $ShippingIACTotal, NULL );
 
   return $ShippingIACTotal;
-
 }
 
 function ShippingDomestic($ItemInputs, $PortDFInputs) {
@@ -212,7 +224,7 @@ function ShippingDomestic($ItemInputs, $PortDFInputs) {
   calc_log($ItemInputs, 'ShippingDomesticCollection', $ShippingDomesticCollection, NULL );
 
   $ShippingDomesticDeliverySurcharge =
-    1 + ($PortDFInputs['ShippingDomesticDeliverySurchargePct']/100);
+    1 + ($PortDFInputs['ShippingIAC_DeliverySurchargePct']/100);
   calc_log($ItemInputs, 'ShippingDomesticDeliverySurcharge', $ShippingDomesticDeliverySurcharge, NULL );
 
   $ShippingDomestic = $PortDFInputs['ShippingDomesticDelivery'] +
@@ -243,6 +255,11 @@ function ShippingTotal($ItemInputs, $PortInputsAll, $PortInputs) {
     ($ItemInputs['ItemWeightKG'] * $ItemInputs['MinimumOrder'] / 1000)
     * $ItemInputs['ShippingPackagingAdjustment'];
   calc_log($ItemInputs,'ShippedItemWeightMT', NULL, NULL);
+
+  $ItemInputs['ShippedItemWeightKG'] =
+    ($ItemInputs['ItemWeightKG'] * $ItemInputs['MinimumOrder'])
+    * $ItemInputs['ShippingPackagingAdjustment'];
+  calc_log($ItemInputs,'ShippedItemWeightKG', NULL, NULL);
 
   $ItemInputs['ShippedItemVolumeM3'] =
     $ItemInputs['ItemVolumeM3']

@@ -20,7 +20,7 @@
       "domestic": false,
       "lcl": {
         "ShippingLCLPerItem": 599.2,
-        "PerWShippingLCLPerWVV": 318.8,
+        "ShippingLCLPerWV": 318.8,
         "ShippingLCL_Collection_MT": 369.454545454545,
         "ShippingLCL_Collection_Min": 326.4,
         "ShippingLCL_Delivery_Min": 85,
@@ -68,7 +68,7 @@
       "domestic": false,
       "lcl": {
         "ShippingLCLPerItem": 571.04,
-        "PerWShippingLCLPerWVV": 296.9,
+        "ShippingLCLPerWV": 296.9,
         "ShippingLCL_Collection_MT": 960,
         "ShippingLCL_Collection_Min": 236.8,
         "ShippingLCL_Delivery_Min": 110,
@@ -116,7 +116,7 @@
       "domestic": false,
       "lcl": {
         "ShippingLCLPerItem": 607.758064516129,
-        "PerWShippingLCLPerWVV": 246.5,
+        "ShippingLCLPerWV": 246.5,
         "ShippingLCL_Collection_MT": 1209.67741935484,
         "ShippingLCL_Collection_Min": 298.387096774194,
         "ShippingLCL_Delivery_Min": 110,
@@ -124,7 +124,7 @@
         "ShippingLCL_DeliveryTailgateTruck": 130,
         "ShippingLCL_PortLicence_Min": 48.5,
         "ShippingLCL_PortLicence_MT": 0,
-        "ShippingLCL_DeliverySurchargePct": 14,
+        "ShippingLCL_DeliverySurchargePct": 14
       },
       "af": {
         "ShippingAFPerItem": 496.838709677419,
@@ -164,7 +164,7 @@
       "domestic": false,
       "lcl": {
         "ShippingLCLPerItem": 611.333333333333,
-        "PerWShippingLCLPerWVV": 313.277777777778,
+        "ShippingLCLPerWV": 313.277777777778,
         "ShippingLCL_Collection_MT": 464.799111111111,
         "ShippingLCL_Collection_Min": 433.333333333333,
         "ShippingLCL_Delivery_Min": 95,
@@ -212,7 +212,7 @@
       "domestic": false,
       "lcl": {
         "ShippingLCLPerItem": 596.333333333333,
-        "PerWShippingLCLPerWVV": 149.833333333333,
+        "ShippingLCLPerWV": 149.833333333333,
         "ShippingLCL_Collection_MT": 125,
         "ShippingLCL_Collection_Min": 30.8333333333333,
         "ShippingLCL_Delivery_Min": 110,
@@ -254,7 +254,7 @@
         "ShippingIAC_DeliverySurchargePct": 19,
         "ShippingIAC_Fx_Offset": 20,
         "ShippingIAC_Fx_Multiplier": 6.4
-      },
+      }
     }
   }
 }
