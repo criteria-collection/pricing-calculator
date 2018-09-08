@@ -8,12 +8,27 @@ function ShippingInternational($ItemInputs, $PortInputsAll, $PortInputs) {
     calc_log($ItemInputs, $key, $value, 'input');
   }
 
+  $ShippingLCLTotal = ShippingLCLTotal($ItemInputs, $PortInputs['lcl']);
+  $ShippingAFTotal  = ShippingAFTotal($ItemInputs, $PortInputs['af']);
+  $ShippingIACTotal = ShippingIACTotal($ItemInputs, $PortInputs['iac']);
+
   $BestPrice = min(
-    ShippingLCLTotal($ItemInputs, $PortInputs['lcl']),
-    ShippingAFTotal($ItemInputs, $PortInputs['af']),
-    ShippingIACTotal($ItemInputs, $PortInputs['iac'])
+    $ShippingLCLTotal,
+    $ShippingAFTotal,
+    $ShippingIACTotal
   );
+
   calc_log($ItemInputs, 'BestPrice', $BestPrice, NULL );
+
+  $price_to_method = array(
+    $ShippingLCLTotal => 'LCL',
+    $ShippingAFTotal  => 'AF',
+    $ShippingIACTotal => 'IAC'
+  );
+
+  $BestMethod = $price_to_method[$BestPrice];
+
+  calc_log($ItemInputs, 'BestMethod', $BestMethod, NULL );
 
   $CustomsQuarantineInspection;
   if ($ItemInputs['ItemHasWood']) {
@@ -295,6 +310,76 @@ function ShippingTotal($ItemInputs, $PortInputsAll, $PortInputs) {
   return $ShippingTotal;
 }
 
+function ImportDutyTotalAUD ($ItemInputs) {
+
+  $ImportDuty = ImportDuty($ItemInputs['ItemCurrency']);
+  calc_log($ItemInputs,'ImportDuty', $ImportDuty, NULL);
+
+  $ImportDutyTotalAUD = $ItemInputs['ItemWholesalePriceAUD'] * $ImportDuty;
+  calc_log($ItemInputs,'ImportDutyTotalAUD', $ImportDutyTotalAUD, NULL);
+
+  return $ImportDutyTotalAUD;
+}
+
+function InsuranceTotalAUD ($ItemInputs, $ShippingInsurancePct) {
+  $InsuranceTotalAUD =
+    ($ItemWholesalePriceAUD + $FreightTotal) * pct_multiplier($ShippingInsurancePct);
+  
+  calc_log($ItemInputs,'ShippingInsurancePct', $ShippingInsurancePct, NULL);
+  calc_log($ItemInputs,'InsuranceTotalAUD', $InsuranceTotalAUD, NULL);
+
+  return $InsuranceTotalAUD;
+}
+
+function RetailTotalAUD (
+  $ItemWholesalePriceAUD,
+  $ProductMarkupPct,
+  $ShippingTotalAUD,
+  $ImportDutyTotalAUD,
+  $InsuranceTotalAUD,
+  $ShippingMarkupPct,
+  $CreditCardSurchargePct
+) {
+
+  calc_log(NULL,'ProductMarkupPct', $ProductMarkupPct, NULL);
+  calc_log(NULL,'ShippingMarkupPct', $ShippingMarkupPct, NULL);
+  calc_log(NULL,'CreditCardSurchargePct', $CreditCardSurchargePct, NULL);
+
+  $RetailTotalAUD = (
+    ($ItemWholesalePriceAUD * pct_multiplier($ProductMarkupPct)) +
+    (($ShippingAUD + $ImportDutyTotalAUD + $InsuranceTotalAUD) * pct_multiplier($ShippingMarkupPct))
+  ) * pct_multiplier($CreditCardSurchargePct);
+
+  calc_log(NULL,'RetailTotalAUD', $RetailTotalAUD, NULL);
+
+  return $RetailTotalAUD;
+}
+
+function ImportDutyPct($currency) {
+
+  switch ($currency) {
+      case "AUD":
+        $ImportDutyPct = 0;
+        break;
+      case "CAD":
+        $ImportDutyPct = 0;
+        break;
+      case "USD":
+        $ImportDutyPct = 0;
+        break;
+      default:
+        $ImportDutyPct = 5; # Default import duty
+  }
+
+  return $ImportDutyPct;
+
+}
+
+function ImportDuty($currency) {
+  $ImportDutyPct = ImportDutyPct($currency);
+  return 1 + ($ImportDutyPct/100);
+}
+
 function unit_conv($unit, $value){
 
   if ($unit == 'in') {
@@ -330,6 +415,10 @@ function weight_unit_map($unit){
   throw new Exception("Unhandled unit type conversion, unit = '$unit'.\n");
 
 };
+
+function pct_multiplier($pct) {
+  return 1 + ($pct / 100);
+}
 
 function calc_log ($item, $calculation, $calc_result, $note) {
 

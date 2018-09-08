@@ -41,8 +41,9 @@ foreach ( $coll_data['data'] as $collection ) {
 
       $item_details = [
         'id'                             => $variation['id'],
-        'ShippingPackagingAdjustmentPct' => 15,
         'ItemWholesalePriceAUD'          => $wholesale_price_aud,
+        'ItemCurrency'                   => $collection['meta']['currency']['value'],
+        'ShippingPackagingAdjustmentPct' => 15,
         'ItemWeightKG'                   => unit_conv(weight_unit_map($collection['meta']['measurement']['value']),
                                                       $variation['shipping_weight']),
         'ItemLengthMtr'                  => unit_conv($collection['meta']['measurement']['value'],
@@ -59,12 +60,34 @@ foreach ( $coll_data['data'] as $collection ) {
       $shipping_total_aud = ShippingTotal(
         $item_details,
         $all_port_data['all'],
-        $all_port_data['port'][$brand_port[$collection['meta']['brand']['slug']]]
+        $all_port_data['port'][$brand_port[$collection['meta']['brand']['slug']]],
+          5, # ImportDutyPct
+        0.5, # ShippingInsurancePct
+        100, # ProductMarkupPct
+         20, # ShippingMarkupPct
+          2  # CreditCardSurchargePct
       );
 
-      $wholesale_price_aud = currency_conv_to_aud(
+      $ItemWholesalePriceAUD = currency_conv_to_aud(
         $collection['meta']['currency']['value'],
         $variation['wholesale_price']
+      );
+
+      $ImportDutyTotalAUD = ImportDutyTotalAUD($ItemInputs);
+
+      $InsuranceTotalAUD = InsuranceTotalAUD(
+        $ItemInputs,
+        .5 # ShippingInsurancePct
+      );
+
+      $RetailTotalAUD = RetailTotalAUD (
+        $ItemWholesalePriceAUD,
+        100, # ProductMarkupPct,
+        $ShippingTotalAUD,
+        $ImportDutyTotalAUD,
+        $InsuranceTotalAUD,
+         20, # ShippingMarkupPct,
+          2 #CreditCardSurchargePct
       );
 
       csv_data([
@@ -77,7 +100,7 @@ foreach ( $coll_data['data'] as $collection ) {
         # wholesale price in native currency
         $variation['wholesale_price'],
         # wholesale price AUD
-        $wholesale_price_aud,
+        $ItemWholesalePriceAUD,
         # shipping total in native currency
         round(currency_conv_from_aud(
           $collection['meta']['currency']['value'],
