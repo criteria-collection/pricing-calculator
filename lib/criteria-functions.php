@@ -321,10 +321,16 @@ function ImportDutyTotalAUD ($ItemInputs) {
   return $ImportDutyTotalAUD;
 }
 
-function InsuranceTotalAUD ($ItemInputs, $ShippingInsurancePct) {
+function InsuranceTotalAUD (
+  $ItemInputs,
+  $ShippingTotalAUD,
+  $ShippingInsurancePct
+) {
+
   $InsuranceTotalAUD =
-    ($ItemWholesalePriceAUD + $FreightTotal) * pct_multiplier($ShippingInsurancePct);
-  
+    ($ItemInputs['ItemWholesalePriceAUD'] + $ShippingTotalAUD)
+    * pct_multiplier($ShippingInsurancePct);
+
   calc_log($ItemInputs,'ShippingInsurancePct', $ShippingInsurancePct, NULL);
   calc_log($ItemInputs,'InsuranceTotalAUD', $InsuranceTotalAUD, NULL);
 
@@ -332,7 +338,7 @@ function InsuranceTotalAUD ($ItemInputs, $ShippingInsurancePct) {
 }
 
 function RetailTotalAUD (
-  $ItemWholesalePriceAUD,
+  $ItemInputs,
   $ProductMarkupPct,
   $ShippingTotalAUD,
   $ImportDutyTotalAUD,
@@ -346,8 +352,8 @@ function RetailTotalAUD (
   calc_log(NULL,'CreditCardSurchargePct', $CreditCardSurchargePct, NULL);
 
   $RetailTotalAUD = (
-    ($ItemWholesalePriceAUD * pct_multiplier($ProductMarkupPct)) +
-    (($ShippingAUD + $ImportDutyTotalAUD + $InsuranceTotalAUD) * pct_multiplier($ShippingMarkupPct))
+    ($ItemInputs['ItemWholesalePriceAUD'] * pct_multiplier($ProductMarkupPct)) +
+    (($ShippingTotalAUD + $ImportDutyTotalAUD + $InsuranceTotalAUD) * pct_multiplier($ShippingMarkupPct))
   ) * pct_multiplier($CreditCardSurchargePct);
 
   calc_log(NULL,'RetailTotalAUD', $RetailTotalAUD, NULL);

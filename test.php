@@ -34,14 +34,14 @@ foreach ( $coll_data['data'] as $collection ) {
     # Exclude variations with insufficient data.
     if ($variation['shipping_height'] > 0) {
 
-      $wholesale_price_aud = currency_conv_to_aud(
+      $ItemWholesalePriceAUD = currency_conv_to_aud(
         $collection['meta']['currency']['value'],
         $variation['wholesale_price']
       );
 
-      $item_details = [
+      $ItemInputs = [
         'id'                             => $variation['id'],
-        'ItemWholesalePriceAUD'          => $wholesale_price_aud,
+        'ItemWholesalePriceAUD'          => $ItemWholesalePriceAUD,
         'ItemCurrency'                   => $collection['meta']['currency']['value'],
         'ShippingPackagingAdjustmentPct' => 15,
         'ItemWeightKG'                   => unit_conv(weight_unit_map($collection['meta']['measurement']['value']),
@@ -57,8 +57,8 @@ foreach ( $coll_data['data'] as $collection ) {
         'TailgateTruckRequired'          => 0, # 1 for yes, 0 for no. Not in data. Hardcoded for now
       ];
 
-      $shipping_total_aud = ShippingTotal(
-        $item_details,
+      $ShippingTotalAUD = ShippingTotal(
+        $ItemInputs,
         $all_port_data['all'],
         $all_port_data['port'][$brand_port[$collection['meta']['brand']['slug']]],
           5, # ImportDutyPct
@@ -68,26 +68,22 @@ foreach ( $coll_data['data'] as $collection ) {
           2  # CreditCardSurchargePct
       );
 
-      $ItemWholesalePriceAUD = currency_conv_to_aud(
-        $collection['meta']['currency']['value'],
-        $variation['wholesale_price']
-      );
-
       $ImportDutyTotalAUD = ImportDutyTotalAUD($ItemInputs);
 
       $InsuranceTotalAUD = InsuranceTotalAUD(
         $ItemInputs,
+        $ShippingTotalAUD,
         .5 # ShippingInsurancePct
       );
 
       $RetailTotalAUD = RetailTotalAUD (
-        $ItemWholesalePriceAUD,
+        $ItemInputs,
         100, # ProductMarkupPct,
         $ShippingTotalAUD,
         $ImportDutyTotalAUD,
         $InsuranceTotalAUD,
-         20, # ShippingMarkupPct,
-          2 #CreditCardSurchargePct
+         20,# ShippingMarkupPct,
+          2 # CreditCardSurchargePct
       );
 
       csv_data([
@@ -95,35 +91,34 @@ foreach ( $coll_data['data'] as $collection ) {
         $collection['meta']['brand']['name'],
         $collection['title'],
         get_variation_option($variation),
+
         # currency
         $collection['meta']['currency']['value'],
+
         # wholesale price in native currency
         $variation['wholesale_price'],
+
         # wholesale price AUD
         $ItemWholesalePriceAUD,
-        # shipping total in native currency
-        round(currency_conv_from_aud(
-          $collection['meta']['currency']['value'],
-          $shipping_total_aud
-        ),2),
+
         # shipping total AUD
-        round($shipping_total_aud,2),
+        round($ShippingTotalAUD,2),
+
+        # import duty in AUD
+        $ImportDutyTotalAUD,
+
+        # insurance in AUD
+        $InsuranceTotalAUD,
+
+        # retail in AUD
+        $RetailTotalAUD,
+
         # retail in native currency
         round(
-          $variation['wholesale_price'] +
           currency_conv_from_aud(
             $collection['meta']['currency']['value'],
-            $shipping_total_aud
+            $RetailTotalAUD
           ),2
-        ),
-        # retail AUD
-        round(
-          currency_conv_to_aud(
-            $collection['meta']['currency']['value'],
-            $variation['wholesale_price']
-          ) +
-          $shipping_total_aud
-          ,2
         )
       ]);
       #print_r($collection);
