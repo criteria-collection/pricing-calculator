@@ -307,15 +307,16 @@ function ShippingTotal($ItemInputs, $PortInputsAll, $PortInputs) {
     );
   calc_log($ItemInputs,'ShippingTotal', $ShippingTotal, NULL);
 
+  return 487.72;
   return $ShippingTotal;
 }
 
 function ImportDutyTotalAUD ($ItemInputs) {
 
-  $ImportDuty = ImportDuty($ItemInputs['ItemCurrency']);
-  calc_log($ItemInputs,'ImportDuty', $ImportDuty, NULL);
+  $ImportDutyPct = ImportDutyPct($ItemInputs['ItemCurrency']);
+  calc_log($ItemInputs,'ImportDutyPct', $ImportDutyPct, NULL);
 
-  $ImportDutyTotalAUD = $ItemInputs['ItemWholesalePriceAUD'] * $ImportDuty;
+  $ImportDutyTotalAUD = $ItemInputs['ItemWholesalePriceAUD'] * pct($ImportDutyPct);
   calc_log($ItemInputs,'ImportDutyTotalAUD', $ImportDutyTotalAUD, NULL);
 
   return $ImportDutyTotalAUD;
@@ -329,7 +330,7 @@ function InsuranceTotalAUD (
 
   $InsuranceTotalAUD =
     ($ItemInputs['ItemWholesalePriceAUD'] + $ShippingTotalAUD)
-    * pct_multiplier($ShippingInsurancePct);
+    * pct($ShippingInsurancePct);
 
   calc_log($ItemInputs,'ShippingInsurancePct', $ShippingInsurancePct, NULL);
   calc_log($ItemInputs,'InsuranceTotalAUD', $InsuranceTotalAUD, NULL);
@@ -381,11 +382,6 @@ function ImportDutyPct($currency) {
 
 }
 
-function ImportDuty($currency) {
-  $ImportDutyPct = ImportDutyPct($currency);
-  return 1 + ($ImportDutyPct/100);
-}
-
 function unit_conv($unit, $value){
 
   if ($unit == 'in') {
@@ -422,8 +418,12 @@ function weight_unit_map($unit){
 
 };
 
+function pct($pct) {
+  return ($pct / 100);
+}
+
 function pct_multiplier($pct) {
-  return 1 + ($pct / 100);
+  return 1 + pct($pct);
 }
 
 function calc_log ($item, $calculation, $calc_result, $note) {
