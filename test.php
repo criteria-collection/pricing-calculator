@@ -78,12 +78,12 @@ foreach ( $coll_data['data'] as $collection ) {
 
       $RetailTotalAUD = RetailTotalAUD (
         $ItemInputs,
-        100, # ProductMarkupPct,
+        100.0, # ProductMarkupPct,
         $ShippingTotalAUD,
         $ImportDutyTotalAUD,
         $InsuranceTotalAUD,
-         20,# ShippingMarkupPct,
-          2 # CreditCardSurchargePct
+         20.0,  # ShippingMarkupPct,
+          1.5 # CreditCardSurchargePct
       );
 
       csv_data([
@@ -99,19 +99,16 @@ foreach ( $coll_data['data'] as $collection ) {
         $variation['wholesale_price'],
 
         # wholesale price AUD
-        $ItemWholesalePriceAUD,
+        round($ItemWholesalePriceAUD,2),
 
         # shipping total AUD
         round($ShippingTotalAUD,2),
 
         # import duty in AUD
-        $ImportDutyTotalAUD,
+        round($ImportDutyTotalAUD,2),
 
         # insurance in AUD
-        $InsuranceTotalAUD,
-
-        # retail in AUD
-        $RetailTotalAUD,
+        round($InsuranceTotalAUD,2),
 
         # retail in native currency
         round(
@@ -119,7 +116,10 @@ foreach ( $coll_data['data'] as $collection ) {
             $collection['meta']['currency']['value'],
             $RetailTotalAUD
           ),2
-        )
+        ),
+
+        # retail in AUD
+        round($RetailTotalAUD,2)
       ]);
       #print_r($collection);
     }
@@ -157,8 +157,9 @@ function csv_header() {
     'Currency',
     'Wholesale',
     'Wholesale (AUD)',
-    'Shipping',
     'Shipping (AUD)',
+    'Duty (AUD)',
+    'Insurance (AUD)',
     'Retail',
     'Retail (AUD)',
   ]);
