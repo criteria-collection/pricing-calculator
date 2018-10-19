@@ -119,7 +119,8 @@ foreach ( $coll_data['data'] as $collection ) {
         ),
 
         # retail in AUD
-        round($RetailTotalAUD,2)
+        round($RetailTotalAUD,2),
+        ceilTo50($RetailTotalAUD),
       ]);
       #print_r($collection);
     }
@@ -162,6 +163,7 @@ function csv_header() {
     'Insurance (AUD)',
     'Retail',
     'Retail (AUD)',
+    'Retail next 50 (AUD)'
   ]);
 }
 
