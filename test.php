@@ -53,7 +53,7 @@ foreach ( $coll_data['data'] as $collection ) {
         'ItemHeightMtr'                  => unit_conv($collection['meta']['measurement']['value'],
                                                       $variation['shipping_height']),
         'ItemHasWood'                    => $variation['has_wood'] ? 1 : 0,
-        'MinimumOrder'                   => $minimum_order, # Not in data. Hardcoded for now
+        'MinimumOrder'                   => $minimum_order,
         'TailgateTruckRequired'          => 0, # 1 for yes, 0 for no. Not in data. Hardcoded for now
       ];
 
