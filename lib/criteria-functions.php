@@ -383,14 +383,14 @@ function ImportDutyPct($currency) {
 }
 
 # https://forums.phpfreaks.com/topic/202056-round-to-nearest-50/
-function roundToPartial($value, $roundTo)
+function ceilToPartial($value, $ceilTo)
 {
-    return round($value / $roundTo) * $roundTo;
+    return ceil($value / $ceilTo) * $ceilTo;
 }
 
-function roundTo50($value)
+function ceilTo50($value)
 {
-    return roundToPartial($value, 50);
+    return ceilToPartial($value, 50);
 }
 
 function unit_conv($unit, $value){
