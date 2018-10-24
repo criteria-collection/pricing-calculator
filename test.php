@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-$_CC_DEBUG=0;
+$_CC_DEBUG=1;
 error_reporting(-1);
 
 include 'lib/criteria-functions.php';
@@ -30,6 +30,11 @@ foreach ( $coll_data['data'] as $collection ) {
                    : 1;
 
   foreach ( $collection['variations'] as $variation ) {
+
+    if ( isset($options['id']) && ($options['id'] != $variation['id']) ) {
+      #echo $options['id'] . "\n" . $variation['id'] . "\n";
+      continue;
+    }
 
     # Exclude variations with insufficient data.
     if ($variation['shipping_height'] > 0) {
@@ -128,7 +133,7 @@ foreach ( $coll_data['data'] as $collection ) {
 };
 
 function parse_args() {
-  $options = getopt(NULL, array("file:", "currency:", "ports:"));
+  $options = getopt(NULL, array("file:", "currency:", "ports:", "id:"));
 
   if (! isset($options['file']) ) {
     $options['file'] = 'test-data/export.json';

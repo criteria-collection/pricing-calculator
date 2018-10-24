@@ -1,0 +1,15 @@
+ImportDutyTotalAUD = ItemWholesalePriceAUD * ImportDuty
+
+InsuranceTotalAUD =
+  (ItemWholesalePriceAUD + ShippingAUD) * ShippingInsurancePct
+
+ShippingInsurancePct   =    .5
+ProductMarkupPct       = 100.0
+ShippingMarkupPct      =  20.0
+CreditCardSurchargePct =   2.0
+
+TotalRetailAUD
+  = (
+      ItemWholesalePriceAUD * ProductMarkup
+      + ((ShippingAUD + ImportDutyTotalAUD + InsuranceTotalAUD) * ShippingMarkupPct)
+    ) * CreditCardSurcharge

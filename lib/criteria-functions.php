@@ -307,7 +307,7 @@ function ShippingTotal($ItemInputs, $PortInputsAll, $PortInputs) {
     );
   calc_log($ItemInputs,'ShippingTotal', $ShippingTotal, NULL);
 
-  return 487.72;
+  # return 487.72;
   return $ShippingTotal;
 }
 
